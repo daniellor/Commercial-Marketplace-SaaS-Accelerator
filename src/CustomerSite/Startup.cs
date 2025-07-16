@@ -6,6 +6,7 @@ using Marketplace.SaaS.Accelerator.CustomerSite.Controllers;
 using Marketplace.SaaS.Accelerator.CustomerSite.WebHook;
 using Marketplace.SaaS.Accelerator.DataAccess.Context;
 using Marketplace.SaaS.Accelerator.DataAccess.Contracts;
+using Marketplace.SaaS.Accelerator.DataAccess.Enums;
 using Marketplace.SaaS.Accelerator.DataAccess.Services;
 using Marketplace.SaaS.Accelerator.Services.Configurations;
 using Marketplace.SaaS.Accelerator.Services.Contracts;
@@ -123,7 +124,19 @@ public class Startup
         services.AddSingleton<IAppVersionService>(new AppVersionService(Assembly.GetExecutingAssembly()?.GetName()?.Version));
 
         services
-            .AddDbContext<SaasKitContext>(options => options.UseSqlServer(this.Configuration.GetConnectionString("DefaultConnection")));
+           .AddDbContext<SaasKitContext>(options =>
+           {
+               var databaseProvider = Enum.Parse<DatabaseProviderEnum>(this.Configuration.GetConnectionString("DatabaseProvider"));
+               var db = databaseProvider switch
+               {
+                   DatabaseProviderEnum.PostgreSQL => options.UseNpgsql(this.Configuration.GetConnectionString("DefaultConnection"),
+                               c => c.MigrationsAssembly("Marketplace.SaaS.Accelerator.DataAccess.Migrations.PostgreSQL")),
+                   DatabaseProviderEnum.MSSQL => options.UseSqlServer(this.Configuration.GetConnectionString("DefaultConnection"),
+                               c => c.MigrationsAssembly("Marketplace.SaaS.Accelerator.DataAccess.Migrations.MSSQL")),
+                   _ => throw new InvalidOperationException($"DB Provider {databaseProvider} is not supported."),
+               };
+           }
+           );
 
         InitializeRepositoryServices(services);
 

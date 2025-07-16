@@ -183,8 +183,22 @@ public class SubscriptionsRepository : ISubscriptionsRepository
     {
         if (subscriptionId != default)
         {
-            var subscriptionParameters = this.context.SubscriptionParametersOutput.FromSqlRaw("dbo.spGetSubscriptionParameters {0},{1}", subscriptionId, planId).ToList();
-            return subscriptionParameters.ToList();
+            //var subscriptionParameters = this.context.SubscriptionParametersOutput.FromSqlRaw("dbo.spGetSubscriptionParameters {0},{1}", subscriptionId, planId).ToList();
+            var query = from s in this.context.OfferAttributes
+                        join p in this.context.Plans on s.OfferId equals p.OfferId
+                        join pa in this.context.PlanAttributeMapping on s.Id equals pa.PlanAttributeId
+                        join sp in this.context.SubscriptionAttributeValues on pa.PlanAttributeId equals sp.PlanAttributeId into subscriptionParameters
+                        from sp in subscriptionParameters.DefaultIfEmpty()
+                        where sp.SubscriptionId == subscriptionId && p.PlanGuid == planId
+                        where p.PlanGuid == planId
+                    select new SubscriptionParametersOutput
+                    {
+                        Id = s.Id,
+                        OfferId = s.OfferId,
+                        CreateDate = s.CreateDate,
+                        
+                    };
+            return query.ToList();
         }
 
         return new List<SubscriptionParametersOutput>();
