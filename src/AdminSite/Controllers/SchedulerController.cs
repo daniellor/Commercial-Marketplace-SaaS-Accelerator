@@ -87,7 +87,8 @@ public class SchedulerController : BaseController
         ISubscriptionUsageLogsRepository subscriptionUsageLogsRepository,
         IApplicationConfigRepository applicationConfigRepository,
         IOfferAttributesRepository offerAttributeRepository,
-        IOffersRepository offerRepository
+        IOffersRepository offerRepository, 
+        TimeProvider timeProvider
         ) :base(applicationConfigRepository, appVersionService)
 
     {
@@ -95,7 +96,7 @@ public class SchedulerController : BaseController
         this.logger = logger;
         this.meteredRepository = meteredRepository;
         this.schedulerService = new MeteredPlanSchedulerManagementService(frequencyRepository, schedulerRepository, schedulerViewRepository,subscriptionUsageLogsRepository,applicationConfigRepository);
-        this.subscriptionService = new SubscriptionService(subscriptionRepository,plansRepository);
+        this.subscriptionService = new SubscriptionService(subscriptionRepository,plansRepository, timeProvider);
         this.plansRepository = plansRepository;
         this.offerAttributeRepository = offerAttributeRepository;
         this.offerRepository = offerRepository;

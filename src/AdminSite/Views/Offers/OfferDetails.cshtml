@@ -77,7 +77,7 @@
                                                 </td>
                                                 <td>
                                                     @*<input type="checkbox" id="OfferAttributes_Isactive_@i" name="OfferAttributes[@i].Isactive" value="@Model.OfferAttributes[i].Isactive" checked="@Model.OfferAttributes[i].Isactive" />*@
-                                                    @Html.CheckBoxFor(model => model.OfferAttributes[i].Isactive, new { name = "OfferAttributes[@i].Isactive", id = string.Format("OfferAttributes_Isactive_{0}", @i) })
+                                                    @Html.CheckBoxFor(model => model.OfferAttributes[i].IsActive, new { name = "OfferAttributes[@i].Isactive", id = string.Format("OfferAttributes_Isactive_{0}", @i) })
                                                 </td>
                                                 <td>
                                                     @Html.CheckBoxFor(model => model.OfferAttributes[i].IsRequired, new { name = "OfferAttributes[@i].IsRequired", id = string.Format("OfferAttributes_IsRequired_{0}", @i) })

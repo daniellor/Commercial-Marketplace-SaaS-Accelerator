@@ -1,0 +1,15 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+	<RootNamespace>Marketplace.SaaS.Accelerator.DataAccess.Migrations.PostgreSQL</RootNamespace>
+	<AssemblyName>Marketplace.SaaS.Accelerator.DataAccess.Migrations.PostgreSQL</AssemblyName>	  
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\DataAccess\DataAccess.csproj" />
+  </ItemGroup>
+
+</Project>

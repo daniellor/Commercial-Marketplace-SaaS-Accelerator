@@ -11,8 +11,8 @@ public partial class MeteredPlanSchedulerManagement
     public int? DimensionId { get; set; }
     public int? FrequencyId { get; set; }
     public double? Quantity { get; set; }
-    public DateTime? StartDate { get; set; }
-    public DateTime? NextRunTime { get; set; }
+    public DateTimeOffset? StartDate { get; set; }
+    public DateTimeOffset? NextRunTime { get; set; }
 
     public virtual Plans Plan { get; set; }
     public virtual Subscriptions Subscriptions { get; set; }

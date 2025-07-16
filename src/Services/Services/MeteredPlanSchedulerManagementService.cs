@@ -268,9 +268,9 @@ public class MeteredPlanSchedulerManagementService
     }
 
 
-    public DateTime? GetSchedulerLastRunTime(int id,string schedulerName)
+    public DateTimeOffset? GetSchedulerLastRunTime(int id,string schedulerName)
     {
-        DateTime? lastRunTime = null;
+        DateTimeOffset? lastRunTime = null;
         var scheduledItem = this.schedulerRepository.Get(id);
         var meteredAudits = this.subscriptionUsageLogsRepository.GetMeteredAuditLogsBySubscriptionId(Convert.ToInt32(scheduledItem.SubscriptionId));
         var scheduledItemView = this.schedulerViewRepository.GetById(id);

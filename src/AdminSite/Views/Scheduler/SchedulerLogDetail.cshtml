@@ -99,8 +99,7 @@
                             <td class="text-left">@log.Id</td>
                             <td class="text-left">@log.StatusCode</td>
                             <td class="text-left">
-                                @if (log.CreatedDate != null && log.CreatedDate.HasValue)
-                                {@log.CreatedDate.Value.ToString()}
+                                {@log.CreatedDate.ToString()}
                             </td>
                             <td>@log.RunBy</td>
                             <td><button id="detailBtn" class="cm-button-default-small" onclick="ShowDetail('@log.RequestJson','@log.ResponseJson')">Detail</button></td>

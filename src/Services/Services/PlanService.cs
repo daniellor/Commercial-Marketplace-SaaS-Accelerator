@@ -114,7 +114,7 @@ public class PlanService
             {
                 Id = events.Id,
                 PlanId = events.PlanId,
-                Isactive = events.Isactive,
+                IsActive = events.IsActive,
                 SuccessStateEmails = events.SuccessStateEmails,
                 FailureStateEmails = events.FailureStateEmails,
                 EventName = events.EventsName,
@@ -162,7 +162,7 @@ public class PlanService
         {
             PlanEventsMapping events = new PlanEventsMapping();
             events.Id = planEvents.Id;
-            events.Isactive = planEvents.Isactive;
+            events.IsActive = planEvents.IsActive;
             events.PlanId = planEvents.PlanId;
             events.SuccessStateEmails = planEvents.SuccessStateEmails;
             events.FailureStateEmails = planEvents.FailureStateEmails;

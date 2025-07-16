@@ -19,7 +19,7 @@ public partial class SubscriptionParametersOutput
     public Guid OfferId { get; set; }
     public Guid PlanId { get; set; }
     public int? UserId { get; set; }
-    public DateTime? CreateDate { get; set; }
+    public DateTimeOffset CreateDate { get; set; }
     public bool FromList { get; set; }
     public string ValuesList { get; set; }
     public int Max { get; set; }

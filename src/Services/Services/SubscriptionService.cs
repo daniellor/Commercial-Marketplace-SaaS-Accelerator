@@ -30,6 +30,7 @@ public class SubscriptionService
     /// The current user identifier.
     /// </summary>
     private int currentUserId;
+    private readonly TimeProvider timeProvider;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="SubscriptionService"/> class.
@@ -37,11 +38,12 @@ public class SubscriptionService
     /// <param name="subscriptionRepo">The subscription repo.</param>
     /// <param name="planRepository">The plan repository.</param>
     /// <param name="currentUserId">The current user identifier.</param>
-    public SubscriptionService(ISubscriptionsRepository subscriptionRepo, IPlansRepository planRepository, int currentUserId = 0)
+    public SubscriptionService(ISubscriptionsRepository subscriptionRepo, IPlansRepository planRepository, TimeProvider timeProvider, int currentUserId = 0)
     {
         this.subscriptionRepository = subscriptionRepo;
         this.planRepository = planRepository;
         this.currentUserId = currentUserId;
+        this.timeProvider = timeProvider;
     }
 
     /// <summary>
@@ -59,9 +61,9 @@ public class SubscriptionService
             Ampquantity = subscriptionDetail.Quantity,
             AmpsubscriptionId = subscriptionDetail.Id,
             CreateBy = this.currentUserId,
-            CreateDate = DateTime.Now,
+            CreateDate = this.timeProvider.GetUtcNow(),
             IsActive = isActive,
-            ModifyDate = DateTime.Now,
+            ModifyDate = this.timeProvider.GetUtcNow(),
             Name = subscriptionDetail.Name,
             SubscriptionStatus = Convert.ToString(subscriptionDetail.SaasSubscriptionStatus),
             UserId = customerUserId == 0 ? this.currentUserId : customerUserId,
@@ -69,8 +71,8 @@ public class SubscriptionService
             PurchaserTenantId = subscriptionDetail.Purchaser.TenantId,
             AmpOfferId = subscriptionDetail.OfferId,
             Term = subscriptionDetail.Term.TermUnit.ToString(),
-            StartDate = subscriptionDetail.Term.StartDate.ToUniversalTime().DateTime,
-            EndDate = subscriptionDetail.Term.EndDate.ToUniversalTime().DateTime
+            StartDate = subscriptionDetail.Term?.StartDate,
+            EndDate = subscriptionDetail.Term?.EndDate
         };
         return this.subscriptionRepository.Save(newSubscription);
     }
@@ -161,8 +163,8 @@ public class SubscriptionService
             OfferId = subscription.AmpOfferId,
             Term = new TermResult
             {
-                StartDate = subscription.StartDate.GetValueOrDefault(),
-                EndDate = subscription.EndDate.GetValueOrDefault(),
+                StartDate = subscription.StartDate,
+                EndDate = subscription.EndDate,
             },
             Quantity = subscription.Ampquantity,
             Name = subscription.Name,

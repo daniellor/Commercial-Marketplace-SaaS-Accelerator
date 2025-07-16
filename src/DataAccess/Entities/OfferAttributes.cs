@@ -15,8 +15,8 @@ public partial class OfferAttributes
     public int? Min { get; set; }
     public string Type { get; set; }
     public int? DisplaySequence { get; set; }
-    public bool Isactive { get; set; }
-    public DateTime? CreateDate { get; set; }
+    public bool IsActive { get; set; }
+    public DateTimeOffset CreateDate { get; set; }
     public int? UserId { get; set; }
     public Guid OfferId { get; set; }
     public bool? IsDelete { get; set; }

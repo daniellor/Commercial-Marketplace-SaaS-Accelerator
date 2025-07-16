@@ -257,7 +257,7 @@ public class PlansRepository : IPlansRepository
                 PlanEventsModel planEvent = new PlanEventsModel();
                 planEvent.Id = events.Id;
                 planEvent.PlanId = events.PlanId;
-                planEvent.Isactive = events.Isactive;
+                planEvent.IsActive = events.IsActive;
                 planEvent.SuccessStateEmails = events.SuccessStateEmails;
                 planEvent.FailureStateEmails = events.FailureStateEmails;
                 planEvent.EventsName = events.EventsName;
@@ -326,7 +326,7 @@ public class PlansRepository : IPlansRepository
             if (existingPlanEvents != null)
             {
                 existingPlanEvents.Id = planEvents.Id;
-                existingPlanEvents.Isactive = planEvents.Isactive;
+                existingPlanEvents.IsActive = planEvents.IsActive;
                 existingPlanEvents.PlanId = planEvents.PlanId;
                 existingPlanEvents.SuccessStateEmails = planEvents.SuccessStateEmails;
                 existingPlanEvents.FailureStateEmails = planEvents.FailureStateEmails;

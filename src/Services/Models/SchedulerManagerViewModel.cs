@@ -74,14 +74,14 @@ public partial class SchedulerManagerViewModel
     /// <value>
     /// Schedule Start date.
     /// </value>
-    public DateTime StartDate { get; set; }
+    public DateTimeOffset StartDate { get; set; }
     /// <summary>
     /// Gets or sets schedule next run datatime.
     /// </summary>
     /// <value>
     /// schedule next run.
     /// </value>
-    public DateTime? NextRunTime { get; set; }
+    public DateTimeOffset? NextRunTime { get; set; }
 
     /// <summary>
     /// Gets or sets schedule last run datatime.
@@ -89,5 +89,5 @@ public partial class SchedulerManagerViewModel
     /// <value>
     /// schedule last run.
     /// </value>
-    public DateTime? LastRunTime { get; set; }
+    public DateTimeOffset? LastRunTime { get; set; }
 }

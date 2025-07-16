@@ -123,14 +123,15 @@ public class WebHookHandler : IWebhookHandler
                           IEventsRepository eventsRepository, 
                           IApplicationConfigRepository applicationConfigRepository, 
                           IEmailTemplateRepository emailTemplateRepository, 
-                          IPlanEventsMappingRepository planEventsMappingRepository)
+                          IPlanEventsMappingRepository planEventsMappingRepository,
+                          TimeProvider timeProvider)
     {
         this.applicationLogRepository = applicationLogRepository;
         this.subscriptionsRepository = subscriptionsRepository;
         this.planRepository = planRepository;
         this.subscriptionsLogRepository = subscriptionsLogRepository;
         this.applicationLogService = new ApplicationLogService(this.applicationLogRepository);
-        this.subscriptionService = new SubscriptionService(this.subscriptionsRepository, this.planRepository);
+        this.subscriptionService = new SubscriptionService(this.subscriptionsRepository, this.planRepository, timeProvider);
         this.emailService = emailService;
         this.loggerFactory = loggerFactory;
         this.usersRepository = usersRepository;
@@ -153,6 +154,7 @@ public class WebHookHandler : IWebhookHandler
             usersRepository,
             offersRepository,
             emailService,
+            timeProvider,
             this.loggerFactory.CreateLogger<NotificationStatusHandler>());
     }
 

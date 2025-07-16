@@ -80,13 +80,13 @@ public partial class MeteredPlanSchedulerManagementModel
     /// <value>
     /// date to start the trigger.
     /// </value>
-    public DateTime? StartDate { get; set; }
+    public DateTimeOffset? StartDate { get; set; }
     /// <summary>
     /// Gets or sets the next date.
     /// </summary>
     /// <value>
     /// Next Run time.
     /// </value>
-    public DateTime? NextRunTime { get; set; }
+    public DateTimeOffset? NextRunTime { get; set; }
 
 }

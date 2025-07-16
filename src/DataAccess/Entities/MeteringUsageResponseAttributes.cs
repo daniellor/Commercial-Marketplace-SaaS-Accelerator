@@ -12,13 +12,13 @@ public partial class MeteringUsageResponseAttributes
     public string Status { get; set; }
 
     [JsonPropertyName("effectiveStartTime")]
-    public DateTime? UsagePostedDate { get; set; }
+    public DateTimeOffset? UsagePostedDate { get; set; }
 
     [JsonPropertyName("usageEventId")]
     public Guid UsageEventId { get; set; }
 
     [JsonPropertyName("messageTime")]
-    public DateTime MessageTime { get; set; }
+    public DateTimeOffset MessageTime { get; set; }
 
     [JsonPropertyName("resourceId")]
     public Guid ResourceId { get; set; }

@@ -145,8 +145,8 @@ public class Executor
                     {
                         // Get the run time.
                         //Always pickup the NextRuntime, durnig firstRun or OneTime then pickup StartDate, as the NextRunTime will be null
-                        DateTime? _nextRunTime = scheduledItem.NextRunTime ?? scheduledItem.StartDate;
-                        int timeDifferentInHours = (int)_currentUTCTime.Subtract(_nextRunTime.Value).TotalHours;
+                        DateTimeOffset? _nextRunTime = scheduledItem.NextRunTime ?? scheduledItem.StartDate;
+                        int timeDifferentInHours = (int)_currentUTCTime.Subtract(_nextRunTime.Value.DateTime).TotalHours;
 
                         // Print the scheduled Item and the expected run date
                         PrintScheduler(scheduledItem,
@@ -312,7 +312,7 @@ public class Executor
     /// <param name="nextRun">next run time</param>
     /// <param name="timeDifferenceInHours">difference time</param>
     private void PrintScheduler(SchedulerManagerViewModel item, 
-        DateTime? nextRun, 
+        DateTimeOffset? nextRun, 
         int timeDifferenceInHours)
     {
         LogLine($"Scheduled Item Id: {item.Id} " + Environment.NewLine+
@@ -330,7 +330,7 @@ public class Executor
     /// <param name="startDate">Start task Date</param>
     /// <param name="frequency">Task frequency</param>
     /// <returns></returns>
-    private DateTime? GetNextRunTime(DateTime? startDate, SchedulerFrequencyEnum frequency)
+    private DateTimeOffset? GetNextRunTime(DateTimeOffset? startDate, SchedulerFrequencyEnum frequency)
     {
         switch (frequency)
         {

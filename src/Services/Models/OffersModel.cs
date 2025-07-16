@@ -37,7 +37,7 @@ public class OffersModel
     /// <value>
     /// The create date.
     /// </value>
-    public DateTime? CreateDate { get; set; }
+    public DateTimeOffset? CreateDate { get; set; }
 
     /// <summary>
     /// Gets or sets the user identifier.

@@ -18,7 +18,7 @@ public class TermResult
     /// The end date.
     /// </value>
     [JsonPropertyName("endDate")]
-    public DateTimeOffset EndDate { get; set; }
+    public DateTimeOffset? EndDate { get; set; }
 
     /// <summary>
     /// Gets or sets the start date.
@@ -27,7 +27,7 @@ public class TermResult
     /// The start date.
     /// </value>
     [JsonPropertyName("startDate")]
-    public DateTimeOffset StartDate { get; set; }
+    public DateTimeOffset? StartDate { get; set; }
 
     /// <summary>
     /// Gets or sets the term unit.

@@ -89,7 +89,7 @@ public class HomeController : BaseController
     private readonly ILoggerFactory loggerFactory;
 
     private readonly IWebNotificationService _webNotificationService;
-
+    private readonly TimeProvider timeProvider;
     private SubscriptionService subscriptionService = null;
 
     private ApplicationLogService applicationLogService = null;
@@ -137,6 +137,7 @@ public class HomeController : BaseController
         ILoggerFactory loggerFactory, 
         IEmailService emailService,
         IWebNotificationService webNotificationService,
+        TimeProvider timeProvider,
         IAppVersionService appVersionService) : base(appVersionService)
     {
         this.apiService = apiService;
@@ -145,8 +146,8 @@ public class HomeController : BaseController
         this.applicationLogRepository = applicationLogRepository;
         this.planRepository = planRepository;
         this.userRepository = userRepository;
-        this.userService = new UserService(this.userRepository);
-        this.subscriptionService = new SubscriptionService(this.subscriptionRepository, this.planRepository);
+        this.userService = new UserService(this.userRepository, timeProvider);
+        this.subscriptionService = new SubscriptionService(this.subscriptionRepository, this.planRepository, timeProvider);
         this.applicationLogService = new ApplicationLogService(this.applicationLogRepository);
         this.applicationConfigRepository = applicationConfigRepository;
         this.applicationConfigService = new ApplicationConfigService(this.applicationConfigRepository);
@@ -160,7 +161,7 @@ public class HomeController : BaseController
         this.emailService = emailService;
         this.loggerFactory = loggerFactory;
         this._webNotificationService = webNotificationService;
-
+        this.timeProvider = timeProvider;
         this.pendingActivationStatusHandlers = new PendingActivationStatusHandler(
             apiService,
             subscriptionRepo,
@@ -190,6 +191,7 @@ public class HomeController : BaseController
             userRepository,
             offersRepository,
             emailService,
+            timeProvider,
             this.loggerFactory.CreateLogger<NotificationStatusHandler>());
 
         this.unsubscribeStatusHandlers = new UnsubscribeStatusHandler(
@@ -223,7 +225,7 @@ public class HomeController : BaseController
             {
                 var userId = this.userService.AddUser(this.GetCurrentUserDetail());
                 var currentUserId = this.userService.GetUserIdFromEmailAddress(this.CurrentUserEmailAddress);
-                this.subscriptionService = new SubscriptionService(this.subscriptionRepository, this.planRepository, userId);
+                this.subscriptionService = new SubscriptionService(this.subscriptionRepository, this.planRepository, this.timeProvider, userId);
                 this.logger.Info("User authenticated successfully");
                 if (!string.IsNullOrEmpty(token))
                 {
@@ -518,7 +520,7 @@ public class HomeController : BaseController
             {
                 var userId = this.userService.AddUser(this.GetCurrentUserDetail());
                 var currentUserId = this.userService.GetUserIdFromEmailAddress(this.CurrentUserEmailAddress);
-                this.subscriptionService = new SubscriptionService(this.subscriptionRepository, this.planRepository, userId);
+                this.subscriptionService = new SubscriptionService(this.subscriptionRepository, this.planRepository, this.timeProvider, userId);
                 this.TempData["ShowWelcomeScreen"] = false;
 
                 subscriptionDetail = this.subscriptionService.GetSubscriptionsBySubscriptionId(subscriptionId);
@@ -848,7 +850,7 @@ public class HomeController : BaseController
             {
                 var userId = this.userService.AddUser(this.GetCurrentUserDetail());
                 var currentUserId = this.userService.GetUserIdFromEmailAddress(this.CurrentUserEmailAddress);
-                this.subscriptionService = new SubscriptionService(this.subscriptionRepository, this.planRepository, userId);
+                this.subscriptionService = new SubscriptionService(this.subscriptionRepository, this.planRepository, this.timeProvider, userId);
                 var planDetails = this.planRepository.GetById(planId);
                 this.TempData["ShowWelcomeScreen"] = false;
                 subscriptionDetail = this.subscriptionService.GetPartnerSubscription(this.CurrentUserEmailAddress, subscriptionId).FirstOrDefault();

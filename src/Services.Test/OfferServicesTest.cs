@@ -110,7 +110,7 @@ public class OfferServicesTest
             OfferId = Guid.NewGuid(),
             UserId = 1,
             IsDelete = false,
-            Isactive = true,
+            IsActive = true,
             IsRequired = false,
             Max = 1,
             Min = 1,
