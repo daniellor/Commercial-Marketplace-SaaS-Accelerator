@@ -9,6 +9,7 @@
 	  <RootNamespace>Marketplace.SaaS.Accelerator.AdminSite</RootNamespace>
 	  <Version>9.1.0</Version>
 	  <IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
+	  <SourceRevisionId>build$([System.DateTime]::UtcNow.ToString("yyyy-MM-ddTHH:mm:ss:fffZ"))</SourceRevisionId>
   </PropertyGroup>
 
   <ItemGroup>
@@ -56,6 +57,7 @@
     <ProjectReference Include="..\MSSQL\MSSQL.csproj" />
     <ProjectReference Include="..\PostgreSQL\PostgreSQL.csproj" />
     <ProjectReference Include="..\Services\Services.csproj" />
+    <ProjectReference Include="..\Web.Infrastructure\Web.Infrastructure.csproj" />
   </ItemGroup>
 
 

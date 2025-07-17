@@ -5,7 +5,7 @@ using System;
 
 #nullable disable
 
-namespace Marketplace.SaaS.Accelerator.DataAccess.Migrations.PostgreSQL.Migrations
+namespace Marketplace.SaaS.Accelerator.DataAccess.Migrations.PostgreSQL.SaasKit
 {
     /// <inheritdoc />
     public partial class initPGSQL : Migration

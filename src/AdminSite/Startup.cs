@@ -2,13 +2,10 @@
 // Licensed under the MIT License. See LICENSE file in the project root for license information.
 
 using System;
-using System.Diagnostics;
 using System.Reflection;
 using Azure.Identity;
 using Marketplace.SaaS.Accelerator.AdminSite.Controllers;
-using Marketplace.SaaS.Accelerator.DataAccess.Context;
 using Marketplace.SaaS.Accelerator.DataAccess.Contracts;
-using Marketplace.SaaS.Accelerator.DataAccess.Enums;
 using Marketplace.SaaS.Accelerator.DataAccess.Services;
 using Marketplace.SaaS.Accelerator.Services.Configurations;
 using Marketplace.SaaS.Accelerator.Services.Contracts;
@@ -22,15 +19,13 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Microsoft.Marketplace.Metering;
 using Microsoft.Marketplace.SaaS;
+using Web.Infrastructure;
 
 namespace Marketplace.SaaS.Accelerator.AdminSite;
 
@@ -148,20 +143,7 @@ public class Startup
         services
             .AddScoped<ApplicationConfigService>();
 
-        services
-            .AddDbContext<SaasKitContext>(options =>
-            {
-                var databaseProvider = Enum.Parse<DatabaseProviderEnum>(this.Configuration.GetConnectionString("DatabaseProvider"));
-                var db = databaseProvider switch
-                {
-                    DatabaseProviderEnum.PostgreSQL => options.UseNpgsql(this.Configuration.GetConnectionString("DefaultConnection"),
-                                c => c.MigrationsAssembly("Marketplace.SaaS.Accelerator.DataAccess.Migrations.PostgreSQL")),
-                    DatabaseProviderEnum.MSSQL => options.UseSqlServer(this.Configuration.GetConnectionString("DefaultConnection"),
-                                c => c.MigrationsAssembly("Marketplace.SaaS.Accelerator.DataAccess.Migrations.MSSQL")),
-                    _ => throw new InvalidOperationException($"DB Provider {databaseProvider} is not supported."),
-                };
-            }
-            );
+       services.AddWebServices(Configuration);
 
 
         InitializeRepositoryServices(services);

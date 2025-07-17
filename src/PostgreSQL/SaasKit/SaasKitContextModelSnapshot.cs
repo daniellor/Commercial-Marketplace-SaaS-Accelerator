@@ -3,20 +3,17 @@ using System;
 using Marketplace.SaaS.Accelerator.DataAccess.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
-namespace Marketplace.SaaS.Accelerator.DataAccess.Migrations.PostgreSQL.Migrations
+namespace Marketplace.SaaS.Accelerator.DataAccess.Migrations.PostgreSQL.SaasKit
 {
     [DbContext(typeof(SaasKitContext))]
-    [Migration("20250716172526_initPGSQL")]
-    partial class initPGSQL
+    partial class SaasKitContextModelSnapshot : ModelSnapshot
     {
-        /// <inheritdoc />
-        protected override void BuildTargetModel(ModelBuilder modelBuilder)
+        protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

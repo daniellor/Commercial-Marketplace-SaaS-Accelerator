@@ -25,6 +25,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MSSQL", "MSSQL\MSSQL.csproj
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PostgreSQL", "PostgreSQL\PostgreSQL.csproj", "{A5E7F7B1-4A39-4DDD-A730-4371BCE47166}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Web.Infrastructure", "Web.Infrastructure\Web.Infrastructure.csproj", "{6C45C889-CE9B-4E0A-B8C5-99EB33F00ADF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -67,6 +69,10 @@ Global
 		{A5E7F7B1-4A39-4DDD-A730-4371BCE47166}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A5E7F7B1-4A39-4DDD-A730-4371BCE47166}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A5E7F7B1-4A39-4DDD-A730-4371BCE47166}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6C45C889-CE9B-4E0A-B8C5-99EB33F00ADF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6C45C889-CE9B-4E0A-B8C5-99EB33F00ADF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6C45C889-CE9B-4E0A-B8C5-99EB33F00ADF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6C45C889-CE9B-4E0A-B8C5-99EB33F00ADF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
