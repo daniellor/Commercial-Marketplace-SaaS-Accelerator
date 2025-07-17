@@ -12,7 +12,6 @@ namespace Marketplace.SaaS.Accelerator.DataAccess.Migrations.MSSQL.SaasKit.Custo
     {
         public static void BaselineV7_SeedData(this MigrationBuilder migrationBuilder)
         {
-            var seedDate = DateTime.Now;
             migrationBuilder.Sql(@$"
                     IF NOT EXISTS (SELECT * FROM [dbo].[ApplicationConfiguration] WHERE [Name] = 'WebNotificationUrl')
                     BEGIN

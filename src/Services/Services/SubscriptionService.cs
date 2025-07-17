@@ -347,7 +347,7 @@ public class SubscriptionService
                 OfferId = parameters.OfferId,
                 Value = parameters.Value,
                 UserId = currentUserId,
-                CreateDate = DateTime.Now,
+                CreateDate = timeProvider.GetUtcNow(),
             });
         }
     }

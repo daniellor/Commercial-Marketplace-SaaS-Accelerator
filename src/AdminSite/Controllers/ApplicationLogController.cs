@@ -23,12 +23,13 @@ public class ApplicationLogController : BaseController
     public ApplicationLogController(
             IApplicationLogRepository applicationLogRepository,
             IAppVersionService appVersionService,
+            TimeProvider timeProvider,
             SaaSClientLogger<ApplicationLogController> logger, 
             IApplicationConfigRepository applicationConfigRepository): base(applicationConfigRepository, appVersionService)
     {
         this.appLogRepository = applicationLogRepository;
         this.logger = logger;
-        appLogService = new ApplicationLogService(this.appLogRepository);
+        appLogService = new ApplicationLogService(this.appLogRepository, timeProvider);
     }
     public IActionResult Index()
     {

@@ -12,7 +12,6 @@ namespace Marketplace.SaaS.Accelerator.DataAccess.Migrations.MSSQL.SaasKit.Custo
     {
         public static void BaselineV5_SeedData(this MigrationBuilder migrationBuilder)
         {
-            var seedDate = DateTime.Now;
             migrationBuilder.Sql(@$"
 INSERT INTO [dbo].[SchedulerFrequency] (Frequency) VALUES ('Hourly')
 INSERT INTO [dbo].[SchedulerFrequency] (Frequency) VALUES ('Daily')

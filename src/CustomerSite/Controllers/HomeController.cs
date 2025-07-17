@@ -148,7 +148,7 @@ public class HomeController : BaseController
         this.userRepository = userRepository;
         this.userService = new UserService(this.userRepository, timeProvider);
         this.subscriptionService = new SubscriptionService(this.subscriptionRepository, this.planRepository, timeProvider);
-        this.applicationLogService = new ApplicationLogService(this.applicationLogRepository);
+        this.applicationLogService = new ApplicationLogService(this.applicationLogRepository, timeProvider);
         this.applicationConfigRepository = applicationConfigRepository;
         this.applicationConfigService = new ApplicationConfigService(this.applicationConfigRepository);
         this.emailTemplateRepository = emailTemplateRepository;
@@ -156,7 +156,7 @@ public class HomeController : BaseController
         this.offerAttributesRepository = offerAttributesRepository;
         this.logger = logger;
         this.offersRepository = offersRepository;
-        this.planService = new PlanService(this.planRepository, this.offerAttributesRepository, this.offersRepository);
+        this.planService = new PlanService(this.planRepository, this.offerAttributesRepository, this.offersRepository, timeProvider);
         this.eventsRepository = eventsRepository;
         this.emailService = emailService;
         this.loggerFactory = loggerFactory;
@@ -168,6 +168,7 @@ public class HomeController : BaseController
             subscriptionLogsRepo,
             planRepository,
             userRepository,
+            timeProvider,
             loggerFactory.CreateLogger<PendingActivationStatusHandler>());
 
         this.pendingFulfillmentStatusHandlers = new PendingFulfillmentStatusHandler(
@@ -177,6 +178,7 @@ public class HomeController : BaseController
             subscriptionLogsRepo,
             planRepository,
             userRepository,
+            timeProvider,
             this.loggerFactory.CreateLogger<PendingFulfillmentStatusHandler>());
 
         this.notificationStatusHandlers = new NotificationStatusHandler(
@@ -200,6 +202,7 @@ public class HomeController : BaseController
             subscriptionLogsRepo,
             planRepository,
             userRepository,
+            timeProvider,
             this.loggerFactory.CreateLogger<UnsubscribeStatusHandler>());
     }
 
@@ -239,7 +242,7 @@ public class HomeController : BaseController
                             OfferId = newSubscription.OfferId,
                             OfferName = newSubscription.OfferId,
                             UserId = currentUserId,
-                            CreateDate = DateTime.Now,
+                            CreateDate = timeProvider.GetUtcNow(),
                             OfferGuid = Guid.NewGuid(),
                         };
                         Guid newOfferId = this.offersRepository.Add(offers);
@@ -264,7 +267,7 @@ public class HomeController : BaseController
                                 NewValue = SubscriptionStatusEnum.PendingFulfillmentStart.ToString(),
                                 OldValue = "None",
                                 CreateBy = currentUserId,
-                                CreateDate = DateTime.Now,
+                                CreateDate = timeProvider.GetUtcNow(),
                             };
                             this.subscriptionLogRepository.Save(auditLog);
                         }
@@ -609,7 +612,7 @@ public class HomeController : BaseController
                                             NewValue = SubscriptionStatusEnumExtension.PendingActivation.ToString(),
                                             OldValue = oldValue.SubscriptionStatus.ToString(),
                                             CreateBy = currentUserId,
-                                            CreateDate = DateTime.Now,
+                                            CreateDate = timeProvider.GetUtcNow(),
                                         };
                                         this.subscriptionLogRepository.Save(auditLog);
                                     }
@@ -642,7 +645,7 @@ public class HomeController : BaseController
                                 NewValue = SubscriptionStatusEnumExtension.PendingUnsubscribe.ToString(),
                                 OldValue = oldValue.SubscriptionStatus.ToString(),
                                 CreateBy = currentUserId,
-                                CreateDate = DateTime.Now,
+                                CreateDate = timeProvider.GetUtcNow(),
                             };
                             this.subscriptionLogRepository.Save(auditLog);
                         }

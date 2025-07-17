@@ -6,7 +6,6 @@ namespace Marketplace.SaaS.Accelerator.DataAccess.Migrations.PostgreSQL.SaasKit.
     {
         public static void BaselineV7_SeedData(this MigrationBuilder migrationBuilder)
         {
-            var seedDate = DateTime.Now;
             migrationBuilder.Sql(@$"
                     do $$
 begin

@@ -59,6 +59,7 @@ public class PlansController : BaseController
         IOfferAttributesRepository offerAttributeRepository, 
         IOffersRepository offerRepository,
         IAppVersionService appVersionService,
+        TimeProvider timeProvider,
         SaaSClientLogger<PlansController> logger):base(applicationConfigRepository, appVersionService)
     {
         this.subscriptionRepository = subscriptionRepository;
@@ -68,7 +69,7 @@ public class PlansController : BaseController
         this.offerAttributeRepository = offerAttributeRepository;
         this.offerRepository = offerRepository;
         this.logger = logger;
-        this.plansService = new PlanService(this.plansRepository, this.offerAttributeRepository, this.offerRepository);
+        this.plansService = new PlanService(this.plansRepository, this.offerAttributeRepository, this.offerRepository, timeProvider);
     }
 
     /// <summary>

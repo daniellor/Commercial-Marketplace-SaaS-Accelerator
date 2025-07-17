@@ -135,7 +135,7 @@ public class OfferAttributesModel
     /// <value>
     /// The create date.
     /// </value>
-    public DateTime CreateDate { get; set; }
+    public DateTimeOffset CreateDate { get; set; }
 
     /// <summary>
     /// Gets or sets a value indicating whether this instance is delete.

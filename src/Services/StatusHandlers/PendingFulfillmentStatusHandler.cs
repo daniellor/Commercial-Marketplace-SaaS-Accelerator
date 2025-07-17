@@ -31,6 +31,7 @@ public class PendingFulfillmentStatusHandler : AbstractSubscriptionStatusHandler
     /// The subscription log repository.
     /// </summary>
     private readonly ISubscriptionLogRepository subscriptionLogRepository;
+    private readonly TimeProvider timeProvider;
 
     /// <summary>
     /// The logger.
@@ -54,12 +55,14 @@ public class PendingFulfillmentStatusHandler : AbstractSubscriptionStatusHandler
         ISubscriptionLogRepository subscriptionLogRepository,
         IPlansRepository plansRepository,
         IUsersRepository usersRepository,
+        TimeProvider timeProvider,
         ILogger<PendingFulfillmentStatusHandler> logger)
         : base(subscriptionsRepository, plansRepository, usersRepository)
     {
         this.fulfillmentApiService = fulfillApiService;
         this.applicationConfigRepository = applicationConfigRepository;
         this.subscriptionLogRepository = subscriptionLogRepository;
+        this.timeProvider = timeProvider;
         this.logger = logger;
     }
 
@@ -88,7 +91,7 @@ public class PendingFulfillmentStatusHandler : AbstractSubscriptionStatusHandler
                     NewValue = SubscriptionStatusEnumExtension.PendingActivation.ToString(),
                     OldValue = SubscriptionStatusEnumExtension.PendingFulfillmentStart.ToString(),
                     CreateBy = userdetails.UserId,
-                    CreateDate = DateTime.Now,
+                    CreateDate = timeProvider.GetUtcNow(),
                 };
                 this.subscriptionLogRepository.Save(auditLog);
             }
@@ -107,7 +110,7 @@ public class PendingFulfillmentStatusHandler : AbstractSubscriptionStatusHandler
                     NewValue = SubscriptionStatusEnumExtension.PendingActivation.ToString(),
                     OldValue = subscription.SubscriptionStatus,
                     CreateBy = userdetails.UserId,
-                    CreateDate = DateTime.Now,
+                    CreateDate = timeProvider.GetUtcNow(),
                 };
                 this.subscriptionLogRepository.Save(auditLog);
             }

@@ -28,7 +28,7 @@ public class OffersController : BaseController
     private readonly IValueTypesRepository valueTypesRepository;
 
     private readonly IOfferAttributesRepository offersAttributeRepository;
-
+    private readonly TimeProvider timeProvider;
     private readonly SaaSClientLogger<OffersController> logger;
 
     private readonly OffersService offersService;
@@ -51,6 +51,7 @@ public class OffersController : BaseController
         IValueTypesRepository valueTypesRepository, 
         IOfferAttributesRepository offersAttributeRepository,
         IAppVersionService appVersionService,
+        TimeProvider timeProvider,
         SaaSClientLogger<OffersController> logger):base(applicationConfigRepository, appVersionService)
     {
         this.applicationConfigRepository = applicationConfigRepository;
@@ -59,6 +60,7 @@ public class OffersController : BaseController
         this.offersService = offersService;
         this.applicationConfigRepository = applicationConfigRepository;
         this.offersAttributeRepository = offersAttributeRepository;
+        this.timeProvider = timeProvider;
         this.logger = logger;
     }
 
@@ -125,7 +127,7 @@ public class OffersController : BaseController
             {
                 foreach (var offerAttribute in offerAttributesList)
                 {
-                    var offerAttributes = MapOfferAttributesModel(offerAttribute, currentUserDetail, offersViewModel);
+                    var offerAttributes = MapOfferAttributesModel(offerAttribute, currentUserDetail, offersViewModel, timeProvider);
 
                     offersViewModel.OfferAttributes.Add(offerAttributes);
                 }
@@ -178,7 +180,7 @@ public class OffersController : BaseController
                         IsActive = offerAttribute.IsActive,
                         IsRequired = offerAttribute.IsRequired,
                         IsDelete = offerAttribute.IsDelete,
-                        CreateDate = DateTime.Now,
+                        CreateDate = timeProvider.GetUtcNow(),
                         UserId = currentUserDetail == null ? 0 : currentUserDetail.UserId,
                         OfferId = offersData.OfferGuid,
                     };
@@ -200,7 +202,7 @@ public class OffersController : BaseController
         }
     }
 
-    private static OfferAttributesModel MapOfferAttributesModel(OfferAttributes offerAttribute, Users currentUserDetail, OfferModel offerModel)
+    private static OfferAttributesModel MapOfferAttributesModel(OfferAttributes offerAttribute, Users currentUserDetail, OfferModel offerModel, TimeProvider timeProvider)
     {
         return new OfferAttributesModel()
         {
@@ -218,7 +220,7 @@ public class OffersController : BaseController
             IsActive = offerAttribute.IsActive,
             IsRequired = offerAttribute.IsRequired ?? false,
             IsDelete = offerAttribute.IsDelete ?? false,
-            CreateDate = DateTime.Now,
+            CreateDate = timeProvider.GetUtcNow(),
             UserId = currentUserDetail?.UserId ?? 0,
             OfferId = offerModel.OfferGuid,
         };

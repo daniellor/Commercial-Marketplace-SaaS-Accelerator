@@ -42,9 +42,7 @@ public partial class SaasKitContext : DbContext
 
     public virtual DbSet<SchedulerFrequency> SchedulerFrequency { get; set; }
     public virtual DbSet<MeteredPlanSchedulerManagement> MeteredPlanSchedulerManagement { get; set; }
-    public virtual DbSet<SchedulerManagerView> SchedulerManagerView { get; set; }
-
-
+   
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         if (!optionsBuilder.IsConfigured)
@@ -544,14 +542,6 @@ public partial class SaasKitContext : DbContext
                 .HasForeignKey(e => e.FrequencyId);
         });
 
-        modelBuilder.Entity<SchedulerManagerView>(entity =>
-        {
-            entity.HasNoKey();
-            entity.ToView("SchedulerManagerView");
-            entity.Property(e => e.PlanId).IsUnicode(false);
-            entity.Property(e => e.Dimension).IsUnicode(false);
-            entity.Property(e => e.Frequency).IsUnicode(false);
-        });
 
         OnModelCreatingPartial(modelBuilder);
     }

@@ -27,6 +27,7 @@ using Microsoft.Marketplace.SaaS;
 using System;
 using System.Reflection;
 using Web.Infrastructure;
+using Web.Infrastructure.Util;
 
 namespace Marketplace.SaaS.Accelerator.CustomerSite;
 
@@ -118,7 +119,7 @@ public class Startup
             .AddSingleton<ValidateJwtToken>();
 
         // Add the assembly version
-        services.AddSingleton<IAppVersionService>(new AppVersionService(Assembly.GetExecutingAssembly()?.GetName()?.Version));
+        services.AddSingleton<IAppVersionService>(new AppVersionService(Assembly.GetExecutingAssembly()?.GetName()?.Version, Assembly.GetEntryAssembly().GetAssemblyLinkTime()));
 
         services.AddWebServices(Configuration);
 

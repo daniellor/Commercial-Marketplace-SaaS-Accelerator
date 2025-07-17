@@ -11,7 +11,6 @@ namespace Marketplace.SaaS.Accelerator.DataAccess.Migrations.MSSQL.SaasKit.Custo
     {
         public static void BaselineV6_SeedData(this MigrationBuilder migrationBuilder)
         {
-            var seedDate = DateTime.Now;
             migrationBuilder.Sql(@$"
 IF NOT EXISTS (SELECT * FROM [dbo].[SchedulerFrequency] WHERE [Frequency] = 'OneTime')
 BEGIN

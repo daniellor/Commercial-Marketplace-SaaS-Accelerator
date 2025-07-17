@@ -578,6 +578,7 @@ namespace Marketplace.SaaS.Accelerator.DataAccess.Migrations.PostgreSQL.SaasKit
                 table: "Subscriptions",
                 column: "UserId");
 
+
             migrationBuilder.BaselineV2_SeedData();
             migrationBuilder.BaselineV5_SeedData();
             migrationBuilder.BaselineV6_SeedData();

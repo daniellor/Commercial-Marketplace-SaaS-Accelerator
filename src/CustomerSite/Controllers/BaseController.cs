@@ -30,7 +30,7 @@ public class BaseController : Controller
     public override void OnActionExecuting(ActionExecutingContext context)
     {
         base.OnActionExecuting(context);
-        ViewData["AppVersion"] = _appVersionService.Version;
+        ViewData["AppVersion"] = _appVersionService.BuildLink;
     }
 
     /// <summary>

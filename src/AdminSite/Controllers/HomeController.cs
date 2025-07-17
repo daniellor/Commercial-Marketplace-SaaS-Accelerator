@@ -174,7 +174,7 @@ public class HomeController : BaseController
         this.userService = new UserService(userRepository, timeProvider);
         this.fulfillApiService = fulfillApiService;
         this.applicationLogRepository = applicationLogRepository;
-        this.applicationLogService = new ApplicationLogService(this.applicationLogRepository);
+        this.applicationLogService = new ApplicationLogService(this.applicationLogRepository, timeProvider);
         this.subscriptionRepository = this.subscriptionRepo;
         this.subscriptionService = new SubscriptionService(this.subscriptionRepository, this.planRepository, timeProvider);
         this.emailTemplateRepository = emailTemplateRepository;
@@ -193,6 +193,7 @@ public class HomeController : BaseController
             subscriptionLogsRepo,
             planRepository,
             userRepository,
+            timeProvider,
             loggerFactory.CreateLogger<PendingActivationStatusHandler>());
 
         this.pendingFulfillmentStatusHandlers = new PendingFulfillmentStatusHandler(
@@ -202,6 +203,7 @@ public class HomeController : BaseController
             subscriptionLogsRepo,
             planRepository,
             userRepository,
+            timeProvider,
             this.loggerFactory.CreateLogger<PendingFulfillmentStatusHandler>());
 
         this.notificationStatusHandlers = new NotificationStatusHandler(
@@ -225,6 +227,7 @@ public class HomeController : BaseController
             subscriptionLogsRepo,
             planRepository,
             userRepository,
+            timeProvider,
             this.loggerFactory.CreateLogger<UnsubscribeStatusHandler>());
     }
 
@@ -629,8 +632,8 @@ public class HomeController : BaseController
                 var subscriptionUsageRequest = new MeteringUsageRequest()
                 {
                     Dimension = subscriptionData.SelectedDimension,
-                    EffectiveStartTime = DateTime.UtcNow,
-                    PlanId = subscriptionData.SubscriptionDetail.AmpplanId,
+                    EffectiveStartTime = timeProvider.GetUtcNow(),
+                    PlanId = Convert.ToInt32(subscriptionData.SubscriptionDetail.AmpplanId),
                     Quantity = Convert.ToDouble(subscriptionData.Quantity ?? "0"),
                     ResourceId = subscriptionData.SubscriptionDetail.AmpsubscriptionId,
                 };
@@ -658,9 +661,9 @@ public class HomeController : BaseController
                     StatusCode = meteringUsageResult.Status,
                     RunBy = "Manual",
                     SubscriptionId = subscriptionData.SubscriptionDetail.Id,
-                    SubscriptionUsageDate = DateTime.UtcNow,
+                    SubscriptionUsageDate = timeProvider.GetUtcNow(),
                     CreatedBy = currentUserDetail == null ? 0 : currentUserDetail.UserId,
-                    CreatedDate = DateTime.Now,
+                    CreatedDate = timeProvider.GetUtcNow(),
                 };
                 this.subscriptionUsageLogsRepository.Save(newMeteredAuditLog);
             }

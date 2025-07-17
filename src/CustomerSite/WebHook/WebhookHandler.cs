@@ -60,6 +60,7 @@ public class WebHookHandler : IWebhookHandler
     /// The plan events mapping repository.
     /// </summary>
     private readonly IPlanEventsMappingRepository planEventsMappingRepository;
+    private readonly TimeProvider timeProvider;
 
     /// <summary>
     /// The events repository.
@@ -130,7 +131,7 @@ public class WebHookHandler : IWebhookHandler
         this.subscriptionsRepository = subscriptionsRepository;
         this.planRepository = planRepository;
         this.subscriptionsLogRepository = subscriptionsLogRepository;
-        this.applicationLogService = new ApplicationLogService(this.applicationLogRepository);
+        this.applicationLogService = new ApplicationLogService(this.applicationLogRepository, timeProvider);
         this.subscriptionService = new SubscriptionService(this.subscriptionsRepository, this.planRepository, timeProvider);
         this.emailService = emailService;
         this.loggerFactory = loggerFactory;
@@ -141,6 +142,7 @@ public class WebHookHandler : IWebhookHandler
         this.applicationConfigRepository = applicationConfigRepository;
         this.emailTemplateRepository = emailTemplateRepository;
         this.planEventsMappingRepository = planEventsMappingRepository;
+        this.timeProvider = timeProvider;
         this.offersRepository = offersRepository;
         this.notificationStatusHandlers = new NotificationStatusHandler(
             fulfillApiService,
@@ -172,7 +174,7 @@ public class WebHookHandler : IWebhookHandler
             SubscriptionId = oldValue?.SubscribeId,
             OldValue = oldValue?.PlanId,
             CreateBy = null,
-            CreateDate = DateTime.Now,
+            CreateDate = timeProvider.GetUtcNow(),
         };
 
         // we reject if the config value is set to false and the old plan is not the same as the new plan.
@@ -210,7 +212,7 @@ public class WebHookHandler : IWebhookHandler
             SubscriptionId = oldValue?.SubscribeId,
             OldValue = oldValue?.Quantity.ToString(),
             CreateBy = null,
-            CreateDate = DateTime.Now,
+            CreateDate = timeProvider.GetUtcNow(),
         };
 
         // we reject if the config value is set to false and the old quantity is not the same as the new quantity.
@@ -248,7 +250,7 @@ public class WebHookHandler : IWebhookHandler
             SubscriptionId = oldValue?.SubscribeId,
             OldValue = Convert.ToString(oldValue?.SubscriptionStatus),
             CreateBy = null,
-            CreateDate = DateTime.Now,
+            CreateDate = timeProvider.GetUtcNow(),
         };
 
         //gets the user setting from appconfig, if key doesnt exist, add to control the behavior.
@@ -313,7 +315,7 @@ public class WebHookHandler : IWebhookHandler
                 NewValue = Convert.ToString(SubscriptionStatusEnum.Suspended),
                 OldValue = Convert.ToString(oldValue.SubscriptionStatus),
                 CreateBy = null,
-                CreateDate = DateTime.Now,
+                CreateDate = timeProvider.GetUtcNow(),
             };
             this.subscriptionsLogRepository.Save(auditLog);
         }
@@ -341,7 +343,7 @@ public class WebHookHandler : IWebhookHandler
                 NewValue = Convert.ToString(SubscriptionStatusEnum.Unsubscribed),
                 OldValue = Convert.ToString(oldValue.SubscriptionStatus),
                 CreateBy = null,
-                CreateDate = DateTime.Now,
+                CreateDate = timeProvider.GetUtcNow(),
             };
             this.subscriptionsLogRepository.Save(auditLog);
         }

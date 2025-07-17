@@ -24,9 +24,9 @@ public class MeteringUsageRequest
 
     /// <summary>Gets or sets the effective start time.</summary>
     /// <value>The effective start time.</value>
-    public DateTime EffectiveStartTime { get; set; }
+    public DateTimeOffset EffectiveStartTime { get; set; }
 
     /// <summary>Gets or sets the plan identifier.</summary>
     /// <value>The plan identifier.</value>
-    public string PlanId { get; set; }
+    public int? PlanId { get; set; }
 }

@@ -26,6 +26,7 @@ public class PlanService
     /// The offer repository.
     /// </summary>
     private IOffersRepository offerRepository;
+    private readonly TimeProvider timeProvider;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="PlanService"/> class.
@@ -33,11 +34,12 @@ public class PlanService
     /// <param name="plansRepository">The plans repository.</param>
     /// <param name="offerAttributesRepository">The offer attributes repository.</param>
     /// <param name="offerRepository">The offer repository.</param>
-    public PlanService(IPlansRepository plansRepository, IOfferAttributesRepository offerAttributesRepository, IOffersRepository offerRepository)
+    public PlanService(IPlansRepository plansRepository, IOfferAttributesRepository offerAttributesRepository, IOffersRepository offerRepository, TimeProvider timeProvider)
     {
         this.plansRepository = plansRepository;
         this.offerAttributesRepository = offerAttributesRepository;
         this.offerRepository = offerRepository;
+        this.timeProvider = timeProvider;
     }
 
     /// <summary>
@@ -142,7 +144,7 @@ public class PlanService
             attribute.PlanId = planAttributes.PlanId;
             attribute.UserId = planAttributes.UserId;
             attribute.PlanAttributeId = planAttributes.PlanAttributeId;
-            attribute.CreateDate = DateTime.Now;
+            attribute.CreateDate = timeProvider.GetUtcNow();
 
             var planEventsId = this.plansRepository.SavePlanAttributes(attribute);
             return planEventsId;
@@ -168,7 +170,7 @@ public class PlanService
             events.FailureStateEmails = planEvents.FailureStateEmails;
             events.EventId = planEvents.EventId;
             events.UserId = planEvents.UserId;
-            events.CreateDate = DateTime.Now;
+            events.CreateDate = timeProvider.GetUtcNow();
             events.CopyToCustomer = planEvents.CopyToCustomer;
             var planEventsId = this.plansRepository.AddPlanEvents(events);
             return planEventsId;
@@ -198,7 +200,7 @@ public class PlanService
                 attribute.PlanId = plan.PlanGuid;
                 attribute.UserId = currentUserId;
                 attribute.PlanAttributeId = existingPlanAttribute.PlanAttributeId;
-                attribute.CreateDate = DateTime.Now;
+                attribute.CreateDate = timeProvider.GetUtcNow();
             }
             else
             {
@@ -207,7 +209,7 @@ public class PlanService
                 attribute.PlanId = plan.PlanGuid;
                 attribute.UserId = currentUserId;
                 attribute.PlanAttributeId = 0;
-                attribute.CreateDate = DateTime.Now;
+                attribute.CreateDate = timeProvider.GetUtcNow();
             }
 
             var planEventsId = this.plansRepository.SavePlanAttributes(attribute);

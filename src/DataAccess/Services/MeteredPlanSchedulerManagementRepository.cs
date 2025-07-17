@@ -18,6 +18,7 @@ public class MeteredPlanSchedulerManagementRepository : IMeteredPlanSchedulerMan
     /// The context.
     /// </summary>
     private readonly SaasKitContext context;
+    private readonly TimeProvider timeProvider;
 
     /// <summary>
     /// The disposed.
@@ -28,9 +29,10 @@ public class MeteredPlanSchedulerManagementRepository : IMeteredPlanSchedulerMan
     /// Initializes a new instance of the <see cref="MeteredPlanSchedulerManagementRepository"/> class.
     /// </summary>
     /// <param name="context">SaaS DAL Context</param>
-    public MeteredPlanSchedulerManagementRepository(SaasKitContext context)
+    public MeteredPlanSchedulerManagementRepository(SaasKitContext context, TimeProvider timeProvider)
     {
         this.context = context;
+        this.timeProvider = timeProvider;
     }
 
     /// <summary>
@@ -63,7 +65,7 @@ public class MeteredPlanSchedulerManagementRepository : IMeteredPlanSchedulerMan
         if (entity.StartDate.HasValue)
         {
             int minute = entity.StartDate.Value.Minute;
-            if (entity.StartDate.Value.Minute >= 30 || entity.StartDate.Value.ToUniversalTime() < DateTime.UtcNow)
+            if (entity.StartDate.Value.Minute >= 30 || entity.StartDate.Value.ToUniversalTime() < timeProvider.GetUtcNow())
             {
                 minute = 60 - entity.StartDate.Value.Minute;
                 entity.StartDate = entity.StartDate.Value.AddMinutes(minute);

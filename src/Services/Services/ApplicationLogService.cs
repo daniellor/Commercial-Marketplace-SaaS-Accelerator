@@ -16,14 +16,16 @@ public class ApplicationLogService
     /// The application log repository.
     /// </summary>
     private readonly IApplicationLogRepository applicationLogRepository;
+    private readonly TimeProvider timeProvider;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ApplicationLogService"/> class.
     /// </summary>
     /// <param name="applicationLogRepository">The application log repository.</param>
-    public ApplicationLogService(IApplicationLogRepository applicationLogRepository)
+    public ApplicationLogService(IApplicationLogRepository applicationLogRepository, TimeProvider timeProvider)
     {
         this.applicationLogRepository = applicationLogRepository;
+        this.timeProvider = timeProvider;
     }
 
     /// <summary>
@@ -34,7 +36,7 @@ public class ApplicationLogService
     {
         ApplicationLog newLog = new ApplicationLog()
         {
-            ActionTime = DateTime.Now,
+            ActionTime = timeProvider.GetUtcNow(),
             LogDetail = HttpUtility.HtmlEncode(logMessage),
         };
 

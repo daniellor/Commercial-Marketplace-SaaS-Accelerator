@@ -26,6 +26,7 @@ public class UnsubscribeStatusHandler : AbstractSubscriptionStatusHandler
     /// The subscription log repository.
     /// </summary>
     private readonly ISubscriptionLogRepository subscriptionLogRepository;
+    private readonly TimeProvider timeProvider;
 
     /// <summary>
     /// The logger.
@@ -47,11 +48,13 @@ public class UnsubscribeStatusHandler : AbstractSubscriptionStatusHandler
         ISubscriptionLogRepository subscriptionLogRepository,
         IPlansRepository plansRepository,
         IUsersRepository usersRepository,
+        TimeProvider timeProvider,
         ILogger<UnsubscribeStatusHandler> logger)
         : base(subscriptionsRepository, plansRepository, usersRepository)
     {
         this.fulfillmentApiService = fulfillApiService;
         this.subscriptionLogRepository = subscriptionLogRepository;
+        this.timeProvider = timeProvider;
         this.logger = logger;
     }
 
@@ -83,7 +86,7 @@ public class UnsubscribeStatusHandler : AbstractSubscriptionStatusHandler
                     NewValue = SubscriptionStatusEnumExtension.Unsubscribed.ToString(),
                     OldValue = status,
                     CreateBy = userdeatils.UserId,
-                    CreateDate = DateTime.Now,
+                    CreateDate = timeProvider.GetUtcNow(),
                 };
                 this.subscriptionLogRepository.Save(auditLog);
 
@@ -104,7 +107,7 @@ public class UnsubscribeStatusHandler : AbstractSubscriptionStatusHandler
                     NewValue = SubscriptionStatusEnumExtension.UnsubscribeFailed.ToString(),
                     OldValue = subscription.SubscriptionStatus,
                     CreateBy = userdeatils.UserId,
-                    CreateDate = DateTime.Now,
+                    CreateDate = timeProvider.GetUtcNow(),
                 };
                 this.subscriptionLogRepository.Save(auditLog);
             }

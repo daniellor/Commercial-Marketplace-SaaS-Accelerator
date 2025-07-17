@@ -34,11 +34,11 @@ public class SMTPEmailService : IEmailService
     /// </summary>
     /// <param name="applicationConfigRepository">The application configuration repository.</param>
     public SMTPEmailService(IApplicationConfigRepository applicationConfigRepository,
-                            IApplicationLogRepository applicationLogRepository)
+                            IApplicationLogRepository applicationLogRepository, TimeProvider timeProvider)
     {
         this.applicationConfigRepository = applicationConfigRepository;
         this.applicationLogRepository = applicationLogRepository;
-        this.applicationLogService = new ApplicationLogService(this.applicationLogRepository);
+        this.applicationLogService = new ApplicationLogService(this.applicationLogRepository, timeProvider);
     }
 
     /// <summary>

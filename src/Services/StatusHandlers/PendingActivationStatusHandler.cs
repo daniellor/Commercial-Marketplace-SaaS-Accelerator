@@ -26,6 +26,7 @@ public class PendingActivationStatusHandler : AbstractSubscriptionStatusHandler
     /// The subscription log repository.
     /// </summary>
     private readonly ISubscriptionLogRepository subscriptionLogRepository;
+    private readonly TimeProvider timeProvider;
 
     /// <summary>
     /// The logger.
@@ -48,11 +49,13 @@ public class PendingActivationStatusHandler : AbstractSubscriptionStatusHandler
         ISubscriptionLogRepository subscriptionLogRepository,
         IPlansRepository plansRepository,
         IUsersRepository usersRepository,
+        TimeProvider timeProvider,
         ILogger<PendingActivationStatusHandler> logger)
         : base(subscriptionsRepository, plansRepository, usersRepository)
     {
         this.fulfillmentApiService = fulfillApiService;
         this.subscriptionLogRepository = subscriptionLogRepository;
+        this.timeProvider = timeProvider;
         this.logger = logger;
     }
 
@@ -88,7 +91,7 @@ public class PendingActivationStatusHandler : AbstractSubscriptionStatusHandler
                     NewValue = SubscriptionStatusEnumExtension.Subscribed.ToString(),
                     OldValue = oldstatus,
                     CreateBy = userdeatils.UserId,
-                    CreateDate = DateTime.Now,
+                    CreateDate = timeProvider.GetUtcNow(),
                 };
                 this.subscriptionLogRepository.Save(auditLog);
 
@@ -110,7 +113,7 @@ public class PendingActivationStatusHandler : AbstractSubscriptionStatusHandler
                     NewValue = SubscriptionStatusEnumExtension.ActivationFailed.ToString(),
                     OldValue = subscription.SubscriptionStatus,
                     CreateBy = userdeatils.UserId,
-                    CreateDate = DateTime.Now,
+                    CreateDate = timeProvider.GetUtcNow(),
                 };
                 this.subscriptionLogRepository.Save(auditLog);
             }

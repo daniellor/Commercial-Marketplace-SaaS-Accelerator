@@ -26,6 +26,7 @@ using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Microsoft.Marketplace.Metering;
 using Microsoft.Marketplace.SaaS;
 using Web.Infrastructure;
+using Web.Infrastructure.Util;
 
 namespace Marketplace.SaaS.Accelerator.AdminSite;
 
@@ -138,7 +139,7 @@ public class Startup
             .AddSingleton<KnownUsersModel>(knownUsers);
 
         // Add the assembly version
-        services.AddSingleton<IAppVersionService>(new AppVersionService(Assembly.GetExecutingAssembly()?.GetName()?.Version));
+        services.AddSingleton<IAppVersionService>(new AppVersionService(Assembly.GetExecutingAssembly()?.GetName()?.Version, Assembly.GetEntryAssembly().GetAssemblyLinkTime()));
 
         services
             .AddScoped<ApplicationConfigService>();
@@ -226,7 +227,6 @@ public class Startup
         services.AddScoped<ISAGitReleasesService, SAGitReleasesService>();
         services.AddScoped<ISchedulerFrequencyRepository, SchedulerFrequencyRepository>();
         services.AddScoped<IMeteredPlanSchedulerManagementRepository, MeteredPlanSchedulerManagementRepository>();
-        services.AddScoped<ISchedulerManagerViewRepository, SchedulerManagerViewRepository>();
         services.AddScoped<SaaSClientLogger<HomeController>>();
         services.AddScoped<SaaSClientLogger<PlansController>>();
         services.AddScoped<SaaSClientLogger<OffersController>>();

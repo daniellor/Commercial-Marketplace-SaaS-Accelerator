@@ -6,7 +6,6 @@ namespace Marketplace.SaaS.Accelerator.DataAccess.Migrations.PostgreSQL.SaasKit.
     {
         public static void BaselineV5_SeedData(this MigrationBuilder migrationBuilder)
         {
-            var seedDate = DateTime.Now;
             migrationBuilder.Sql(@$"
 INSERT INTO public.""SchedulerFrequency"" (""Frequency"") VALUES ('Hourly');
 INSERT INTO public.""SchedulerFrequency"" (""Frequency"") VALUES ('Daily');

@@ -8,4 +8,5 @@ namespace Marketplace.SaaS.Accelerator.Services.Services;
 public interface IAppVersionService
 {
     string Version { get; }
+    string BuildLink { get; }
 }

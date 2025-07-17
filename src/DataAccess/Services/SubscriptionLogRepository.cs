@@ -18,14 +18,16 @@ public class SubscriptionLogRepository : ISubscriptionLogRepository
     /// The context.
     /// </summary>
     private readonly SaasKitContext context;
+    private readonly TimeProvider timeProvider;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="SubscriptionLogRepository"/> class.
     /// </summary>
     /// <param name="context">The this.context.</param>
-    public SubscriptionLogRepository(SaasKitContext context)
+    public SubscriptionLogRepository(SaasKitContext context, TimeProvider timeProvider)
     {
         this.context = context;
+        this.timeProvider = timeProvider;
     }
 
     /// <summary>
@@ -94,7 +96,7 @@ public class SubscriptionLogRepository : ISubscriptionLogRepository
             SubscriptionId = subscriptionID,
             SubscriptionStatus = subscriptionStatus,
             Description = errorDescription,
-            InsertDate = DateTime.Now,
+            InsertDate = timeProvider.GetUtcNow(),
         };
         this.context.WebJobSubscriptionStatus.Add(status);
         this.context.SaveChanges();

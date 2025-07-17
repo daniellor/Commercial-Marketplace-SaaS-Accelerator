@@ -8,7 +8,6 @@
 	  <AssemblyName>AdminSite</AssemblyName>
 	  <RootNamespace>Marketplace.SaaS.Accelerator.AdminSite</RootNamespace>
 	  <Version>9.1.0</Version>
-	  <IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
 	  <SourceRevisionId>build$([System.DateTime]::UtcNow.ToString("yyyy-MM-ddTHH:mm:ss:fffZ"))</SourceRevisionId>
   </PropertyGroup>
 

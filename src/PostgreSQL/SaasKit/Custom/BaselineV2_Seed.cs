@@ -7,7 +7,7 @@ namespace Marketplace.SaaS.Accelerator.DataAccess.Migrations.PostgreSQL.SaasKit.
 
         public static void BaselineV2_SeedData(this MigrationBuilder migrationBuilder)
         {
-            var seedDate = DateTime.Now.ToString(System.Globalization.CultureInfo.InvariantCulture);
+            var seedDate = DateTime.UtcNow;
             migrationBuilder.Sql(@$"
 INSERT INTO public.""ValueTypes""
     (""ValueType"",""CreateDate"",""HTMLType"")

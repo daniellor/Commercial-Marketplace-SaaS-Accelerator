@@ -652,49 +652,6 @@ namespace Marketplace.SaaS.Accelerator.DataAccess.Migrations.PostgreSQL.SaasKit
                     b.ToTable("SchedulerFrequency");
                 });
 
-            modelBuilder.Entity("Marketplace.SaaS.Accelerator.DataAccess.Entities.SchedulerManagerView", b =>
-                {
-                    b.Property<Guid>("AMPSubscriptionId")
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("Dimension")
-                        .IsUnicode(false)
-                        .HasColumnType("text");
-
-                    b.Property<string>("Frequency")
-                        .IsUnicode(false)
-                        .HasColumnType("text");
-
-                    b.Property<int>("Id")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTimeOffset?>("NextRunTime")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("PlanId")
-                        .IsUnicode(false)
-                        .HasColumnType("text");
-
-                    b.Property<string>("PurchaserEmail")
-                        .HasColumnType("text");
-
-                    b.Property<double>("Quantity")
-                        .HasColumnType("double precision");
-
-                    b.Property<string>("SchedulerName")
-                        .HasColumnType("text");
-
-                    b.Property<DateTimeOffset>("StartDate")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("SubscriptionName")
-                        .HasColumnType("text");
-
-                    b.ToTable((string)null);
-
-                    b.ToView("SchedulerManagerView", (string)null);
-                });
-
             modelBuilder.Entity("Marketplace.SaaS.Accelerator.DataAccess.Entities.SubscriptionAttributeValues", b =>
                 {
                     b.Property<int>("Id")
