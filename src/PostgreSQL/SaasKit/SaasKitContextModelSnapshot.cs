@@ -730,26 +730,6 @@ namespace Marketplace.SaaS.Accelerator.DataAccess.Migrations.PostgreSQL.SaasKit
                     b.ToTable("SubscriptionAuditLogs");
                 });
 
-            modelBuilder.Entity("Marketplace.SaaS.Accelerator.DataAccess.Entities.SubscriptionEmailOutput", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Name")
-                        .HasMaxLength(225)
-                        .IsUnicode(false)
-                        .HasColumnType("character varying(225)");
-
-                    b.Property<string>("Value")
-                        .IsUnicode(false)
-                        .HasColumnType("text");
-
-                    b.ToTable("SubscriptionEmailOutput");
-                });
-
             modelBuilder.Entity("Marketplace.SaaS.Accelerator.DataAccess.Entities.SubscriptionParametersOutput", b =>
                 {
                     b.Property<int>("RowNumber")

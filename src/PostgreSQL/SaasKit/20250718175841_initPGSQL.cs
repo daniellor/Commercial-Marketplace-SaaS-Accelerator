@@ -279,19 +279,6 @@ namespace Marketplace.SaaS.Accelerator.DataAccess.Migrations.PostgreSQL.SaasKit
                 });
 
             migrationBuilder.CreateTable(
-                name: "SubscriptionEmailOutput",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    Name = table.Column<string>(type: "character varying(225)", unicode: false, maxLength: 225, nullable: true),
-                    Value = table.Column<string>(type: "text", unicode: false, nullable: true)
-                },
-                constraints: table =>
-                {
-                });
-
-            migrationBuilder.CreateTable(
                 name: "SubscriptionParametersOutput",
                 columns: table => new
                 {
@@ -578,7 +565,6 @@ namespace Marketplace.SaaS.Accelerator.DataAccess.Migrations.PostgreSQL.SaasKit
                 table: "Subscriptions",
                 column: "UserId");
 
-
             migrationBuilder.BaselineV2_SeedData();
             migrationBuilder.BaselineV5_SeedData();
             migrationBuilder.BaselineV6_SeedData();
@@ -637,9 +623,6 @@ namespace Marketplace.SaaS.Accelerator.DataAccess.Migrations.PostgreSQL.SaasKit
 
             migrationBuilder.DropTable(
                 name: "SubscriptionAuditLogs");
-
-            migrationBuilder.DropTable(
-                name: "SubscriptionEmailOutput");
 
             migrationBuilder.DropTable(
                 name: "SubscriptionParametersOutput");

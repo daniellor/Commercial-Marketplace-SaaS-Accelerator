@@ -54,7 +54,7 @@ public class EmailHelper
     /// Error while sending an email, please check the configuration.</exception>
     public EmailContentModel PrepareEmailContent(Guid subscriptionID, Guid planGuId, string processStatus, string planEventName, string subscriptionStatus)
     {
-        string body = this.emailTemplateRepository.GetEmailBodyForSubscription(subscriptionID, processStatus);
+        string body = this.emailTemplateRepository.GetEmailBodyForSubscription(subscriptionID, subscriptionStatus);
         var subscriptionEvent = this.eventsRepository.GetByName(planEventName);
         var emailTemplateData = this.emailTemplateRepository.GetTemplateForStatus(subscriptionStatus);
         if (processStatus == "failure")

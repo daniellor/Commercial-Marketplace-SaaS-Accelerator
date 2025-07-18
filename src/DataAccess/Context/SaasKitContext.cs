@@ -33,7 +33,6 @@ public partial class SaasKitContext : DbContext
     public virtual DbSet<Roles> Roles { get; set; }
     public virtual DbSet<SubscriptionAttributeValues> SubscriptionAttributeValues { get; set; }
     public virtual DbSet<SubscriptionAuditLogs> SubscriptionAuditLogs { get; set; }
-    public virtual DbSet<SubscriptionEmailOutput> SubscriptionEmailOutput { get; set; }
     public virtual DbSet<SubscriptionParametersOutput> SubscriptionParametersOutput { get; set; }
     public virtual DbSet<Subscriptions> Subscriptions { get; set; }
     public virtual DbSet<Users> Users { get; set; }
@@ -366,19 +365,7 @@ public partial class SaasKitContext : DbContext
                 .HasConstraintName("FK__Subscript__Subsc__6477ECF3");
         });
 
-        modelBuilder.Entity<SubscriptionEmailOutput>(entity =>
-        {
-            entity.HasNoKey();
-
-            entity.Property(e => e.Id).ValueGeneratedOnAdd();
-
-            entity.Property(e => e.Name)
-                .HasMaxLength(225)
-                .IsUnicode(false);
-
-            entity.Property(e => e.Value).IsUnicode(false);
-        });
-
+        
         modelBuilder.Entity<SubscriptionParametersOutput>(entity =>
         {
             entity.HasKey(e => e.RowNumber)
