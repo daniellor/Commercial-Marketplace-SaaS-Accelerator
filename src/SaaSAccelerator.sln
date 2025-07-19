@@ -9,8 +9,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CustomerSite", "CustomerSit
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DataAccess", "DataAccess\DataAccess.csproj", "{D728E36F-2A95-4148-96BD-94FA7152217B}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MeteredTriggerJob", "MeteredTriggerJob\MeteredTriggerJob.csproj", "{1A848E08-FAD5-45FC-B9AA-67EDCD415369}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Services", "Services\Services.csproj", "{97EA6BEA-219D-4579-B3DE-26A4884AB509}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Services.Test", "Services.Test\Services.Test.csproj", "{AA73F93F-9F85-497F-BBB4-EF0D673FFCED}"
@@ -45,10 +43,6 @@ Global
 		{D728E36F-2A95-4148-96BD-94FA7152217B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D728E36F-2A95-4148-96BD-94FA7152217B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D728E36F-2A95-4148-96BD-94FA7152217B}.Release|Any CPU.Build.0 = Release|Any CPU
-		{1A848E08-FAD5-45FC-B9AA-67EDCD415369}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{1A848E08-FAD5-45FC-B9AA-67EDCD415369}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{1A848E08-FAD5-45FC-B9AA-67EDCD415369}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{1A848E08-FAD5-45FC-B9AA-67EDCD415369}.Release|Any CPU.Build.0 = Release|Any CPU
 		{97EA6BEA-219D-4579-B3DE-26A4884AB509}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{97EA6BEA-219D-4579-B3DE-26A4884AB509}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{97EA6BEA-219D-4579-B3DE-26A4884AB509}.Release|Any CPU.ActiveCfg = Release|Any CPU
