@@ -25,7 +25,7 @@ jobs:
             username: ${{ secrets.REGISTRY_USERNAME }}
             password: ${{ secrets.REGISTRY_PASSWORD }}
         - run: |
-             docker build . -f src/AdminSite/Dockerfile  -t ${{ secrets.REGISTRY_LOGIN_SERVER }}/saasaccelerator-adminsite:${GITHUB_REF##*/}
+             docker build . -f src/Dockerfile-AdminSite  -t ${{ secrets.REGISTRY_LOGIN_SERVER }}/saasaccelerator-adminsite:${GITHUB_REF##*/}
              docker push ${{ secrets.REGISTRY_LOGIN_SERVER }}/saasaccelerator-adminsite:${GITHUB_REF##*/}
         
         - name: 'Build and push image CustomerSite'
@@ -35,5 +35,5 @@ jobs:
             username: ${{ secrets.REGISTRY_USERNAME }}
             password: ${{ secrets.REGISTRY_PASSWORD }}
         - run: |
-            docker build . -f src/CustomerSite/Dockerfile  -t ${{ secrets.REGISTRY_LOGIN_SERVER }}/saasaccelerator-customersite:${GITHUB_REF##*/}
+            docker build . -f src/Dockerfile-CustomerSite  -t ${{ secrets.REGISTRY_LOGIN_SERVER }}/saasaccelerator-customersite:${GITHUB_REF##*/}
             docker push ${{ secrets.REGISTRY_LOGIN_SERVER }}/saasaccelerator-customersite:${GITHUB_REF##*/}
