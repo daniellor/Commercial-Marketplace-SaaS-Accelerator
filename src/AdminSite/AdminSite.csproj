@@ -9,7 +9,6 @@
 	  <DockerfileRunArguments>-p 8090:8090</DockerfileRunArguments>
 	  <SourceRevisionId>build$([System.DateTime]::UtcNow.ToString("yyyy-MM-ddTHH:mm:ss:fffZ"))</SourceRevisionId>
 	  <UserSecretsId>010ccab2-9700-4a59-a1a8-0069b6418f89</UserSecretsId>
-	  <OutputType>Exe</OutputType>
 	  <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
   </PropertyGroup>
 
