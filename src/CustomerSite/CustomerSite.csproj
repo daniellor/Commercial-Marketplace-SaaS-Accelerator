@@ -8,6 +8,7 @@
 	  <AssemblyName>CustomerSite</AssemblyName>
 	  <RootNamespace>Marketplace.SaaS.Accelerator.CustomerSite</RootNamespace>
 	  <Version>9.1.0</Version>
+	  <DockerfileRunArguments>-p 8080:8080</DockerfileRunArguments>
 	  <SourceRevisionId>build$([System.DateTime]::UtcNow.ToString("yyyy-MM-ddTHH:mm:ss:fffZ"))</SourceRevisionId>
 	  <UserSecretsId>9f7e85b7-749b-48c8-8924-1da47ff347aa</UserSecretsId>
 	  <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>

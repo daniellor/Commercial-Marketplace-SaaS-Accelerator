@@ -4,20 +4,19 @@
 FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS base
 USER $APP_UID
 WORKDIR /app
-EXPOSE 8080
-EXPOSE 8081
+EXPOSE 8090
 
 
 # This stage is used to build the service project
 FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
-COPY ["AdminSite/AdminSite.csproj", "AdminSite/"]
-COPY ["MSSQL/MSSQL.csproj", "MSSQL/"]
-COPY ["DataAccess/DataAccess.csproj", "DataAccess/"]
-COPY ["PostgreSQL/PostgreSQL.csproj", "PostgreSQL/"]
-COPY ["Services/Services.csproj", "Services/"]
-COPY ["Web.Infrastructure/Web.Infrastructure.csproj", "Web.Infrastructure/"]
+COPY ["src/AdminSite/AdminSite.csproj", "AdminSite/"]
+COPY ["src/MSSQL/MSSQL.csproj", "MSSQL/"]
+COPY ["src/DataAccess/DataAccess.csproj", "DataAccess/"]
+COPY ["src/PostgreSQL/PostgreSQL.csproj", "PostgreSQL/"]
+COPY ["src/Services/Services.csproj", "Services/"]
+COPY ["src/Web.Infrastructure/Web.Infrastructure.csproj", "Web.Infrastructure/"]
 RUN dotnet restore "./AdminSite/AdminSite.csproj"
 COPY . .
 WORKDIR "/src/AdminSite"
