@@ -17,15 +17,15 @@ COPY ["src/DataAccess/DataAccess.csproj", "DataAccess/"]
 COPY ["src/PostgreSQL/PostgreSQL.csproj", "PostgreSQL/"]
 COPY ["src/Services/Services.csproj", "Services/"]
 COPY ["src/Web.Infrastructure/Web.Infrastructure.csproj", "Web.Infrastructure/"]
-RUN dotnet restore "./src/AdminSite/AdminSite.csproj"
+RUN dotnet restore "./AdminSite/AdminSite.csproj"
 COPY . .
 WORKDIR "/src/AdminSite"
-RUN dotnet build "./src/AdminSite.csproj" -c $BUILD_CONFIGURATION -o /app/build
+RUN dotnet build "./AdminSite.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
 # This stage is used to publish the service project to be copied to the final stage
 FROM build AS publish
 ARG BUILD_CONFIGURATION=Release
-RUN dotnet publish "./src/AdminSite.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
+RUN dotnet publish "./AdminSite.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
 
 # This stage is used in production or when running from VS in regular mode (Default when not using the Debug configuration)
 FROM base AS final
