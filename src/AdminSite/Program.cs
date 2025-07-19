@@ -27,8 +27,7 @@ using Web.Infrastructure;
 using Web.Infrastructure.AspNet;
 using Web.Infrastructure.Util;
 
-namespace AdminSite
-{
+namespace Marketplace.SaaS.Accelerator.AdminSite;
     /// <summary>
     /// Program.
     /// </summary>
@@ -236,6 +235,5 @@ namespace AdminSite
             services.AddScoped<SaaSClientLogger<SchedulerController>>();
         }
     }
-}
 
 
