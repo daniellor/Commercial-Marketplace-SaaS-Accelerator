@@ -16,8 +16,6 @@ namespace Web.Infrastructure.Hangfire
         {
             try
             {
-               // recurringJobs.AddOrUpdate("NBP-A-hourly", () => importNBPExchangeCurrency.RunAsync("A"), "0 * * * *");
-               // recurringJobs.AddOrUpdate("Vies-check", () => checkViesJob.RunAsync(), "*/1 * * * *");
             }
             catch (Exception e)
             {

@@ -5,7 +5,7 @@ namespace Web.Infrastructure.Util
 {
     public static class AssemblyExtensions
     {
-        public static string GetAssemblyLinkTime(this Assembly assembly)
+        public static string? GetAssemblyLinkTime(this Assembly assembly)
         {
             const string BuildVersionMetadataPrefix = "+build";
 
