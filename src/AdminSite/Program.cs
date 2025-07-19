@@ -27,7 +27,8 @@ using Web.Infrastructure;
 using Web.Infrastructure.AspNet;
 using Web.Infrastructure.Util;
 
-namespace Marketplace.SaaS.Accelerator.AdminSite;
+namespace AdminSite;
+
 
 /// <summary>
 /// Program.
@@ -70,7 +71,7 @@ public class Program
         {
             AdAuthenticationEndPoint = builder.Configuration["SaaSApiConfiguration:AdAuthenticationEndPoint"],
             ClientId = builder.Configuration["SaaSApiConfiguration:ClientId"] ?? Guid.Empty.ToString(),
-            ClientSecret = builder.Configuration["SaaSApiConfiguration:ClientSecret"] ?? String.Empty,
+            ClientSecret = builder.Configuration["SaaSApiConfiguration:ClientSecret"] ?? string.Empty,
             FulFillmentAPIBaseURL = builder.Configuration["SaaSApiConfiguration:FulFillmentAPIBaseURL"],
             MTClientId = builder.Configuration["SaaSApiConfiguration:MTClientId"] ?? Guid.Empty.ToString(),
             FulFillmentAPIVersion = builder.Configuration["SaaSApiConfiguration:FulFillmentAPIVersion"],
@@ -136,8 +137,8 @@ public class Program
         builder.Services
             .AddSingleton<IFulfillmentApiService>(new FulfillmentApiService(new MarketplaceSaaSClient(fulfillmentBaseApi, creds), config, new FulfillmentApiClientLogger()))
             .AddSingleton<IMeteredBillingApiService>(new MeteredBillingApiService(new MarketplaceMeteringClient(creds), config, new SaaSClientLogger<MeteredBillingApiService>()))
-            .AddSingleton<SaaSApiClientConfiguration>(config)
-            .AddSingleton<KnownUsersModel>(knownUsers);
+            .AddSingleton(config)
+            .AddSingleton(knownUsers);
 
         // Add the assembly version
         builder.Services.AddSingleton<IAppVersionService>(new AppVersionService(Assembly.GetExecutingAssembly()?.GetName()?.Version, Assembly.GetEntryAssembly().GetAssemblyLinkTime()));
@@ -158,7 +159,8 @@ public class Program
             options.Cookie.IsEssential = true;
         });
 
-        builder.Services.AddMvc(option => {
+        builder.Services.AddMvc(option =>
+        {
             option.EnableEndpointRouting = false;
             option.Filters.Add(new AutoValidateAntiforgeryTokenAttribute());
         });
@@ -199,7 +201,7 @@ public class Program
 
     }
 
-   
+
     /// <summary>
     /// Initializes the repository services.
     /// </summary>
