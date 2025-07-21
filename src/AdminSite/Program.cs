@@ -24,7 +24,6 @@ using Microsoft.Marketplace.SaaS;
 using System;
 using System.Reflection;
 using Web.Infrastructure;
-using Web.Infrastructure.AspNet;
 using Web.Infrastructure.Util;
 
 namespace Marketplace.SaaS.Accelerator.AdminSite;
@@ -40,17 +39,6 @@ namespace Marketplace.SaaS.Accelerator.AdminSite;
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
-            var kestrelSettings = builder.Configuration.GetSection(nameof(KestrelSettings)).Get<KestrelSettings>();
-
-            if (kestrelSettings!.Enabled)
-            {
-                builder.WebHost.UseKestrel(option =>
-                {
-                    option.ListenAnyIP(kestrelSettings.DefaultEndpointPort, configure => configure.UseHttps());
-                    if (kestrelSettings!.HttpEndpointPort != null)
-                        option.ListenAnyIP(kestrelSettings.HttpEndpointPort.Value);
-                });
-            }
             var loggerFactory = LoggerFactory.Create(builder =>
             {
                 builder
