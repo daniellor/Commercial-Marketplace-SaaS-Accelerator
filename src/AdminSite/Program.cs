@@ -159,15 +159,15 @@ namespace Marketplace.SaaS.Accelerator.AdminSite;
             });
 
             builder.Services.AddScoped<OffersService>();
-            builder.Services.Configure<ForwardedHeadersOptions>(options =>
-            {
-                options.ForwardedHeaders =
-                    ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto | ForwardedHeaders.XForwardedHost | ForwardedHeaders.XForwardedPrefix;
-            });
-            
-            var app = builder.Build();
+        builder.Services.Configure<ForwardedHeadersOptions>(options =>
+        {
+            options.ForwardedHeaders =
+                ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
+        });
 
-            if (app.Environment.IsDevelopment())
+        var app = builder.Build();
+        app.UseForwardedHeaders();
+        if (app.Environment.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
             }
@@ -176,7 +176,6 @@ namespace Marketplace.SaaS.Accelerator.AdminSite;
                 app.UseExceptionHandler("/Home/Error");
                 app.UseHsts();
             }
-            app.UseForwardedHeaders();
             app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseCookiePolicy();
