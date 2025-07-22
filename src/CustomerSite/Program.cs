@@ -151,6 +151,8 @@ public class Program
                 name: "default",
                 template: "{controller=Home}/{action=Index}/{id?}");
         });
+
+        app.Run();
     }
 
     private static void InitializeRepositoryServices(IServiceCollection services)
