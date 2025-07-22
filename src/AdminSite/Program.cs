@@ -166,7 +166,7 @@ namespace Marketplace.SaaS.Accelerator.AdminSite;
         });
 
         var app = builder.Build();
-        app.UseForwardedHeaders();
+        app.UseForwardedHeaders(new ForwardedHeadersOptions { ForwardedHeaders = ForwardedHeaders.XForwardedProto });
         if (app.Environment.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
