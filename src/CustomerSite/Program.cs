@@ -122,7 +122,7 @@ public class Program
         builder.Services.Configure<ForwardedHeadersOptions>(options =>
         {
             options.ForwardedHeaders =
-                ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
+                ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto | ForwardedHeaders.XForwardedHost | ForwardedHeaders.XForwardedPrefix;
         });
         var app = builder.Build();
         app.Use((context, next) =>
