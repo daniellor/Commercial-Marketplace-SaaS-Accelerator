@@ -305,7 +305,7 @@ public class HomeController : BaseController
                     }
                     else
                     {
-                        redirectUri = "/?token=" + token;
+                        redirectUri = "https://order-testing.hyperionsystem.app/?token=" + token;
                     }
                     this.logger.Info($"Redirect uri:{redirectUri}");
                     return this.Challenge(
