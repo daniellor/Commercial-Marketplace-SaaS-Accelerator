@@ -296,17 +296,7 @@ public class HomeController : BaseController
 
                     // Instead of hardcoding the redirect URI, use the forwarded headers if present
                     string redirectUri;
-                    if (Request.Headers.ContainsKey("X-Forwarded-Proto") && Request.Headers.ContainsKey("X-Forwarded-Host"))
-                    {
-                        var proto = Request.Headers["X-Forwarded-Proto"].ToString();
-                        var host = Request.Headers["X-Forwarded-Host"].ToString();
-                        var pathBase = Request.Headers.ContainsKey("X-Forwarded-Prefix") ? Request.Headers["X-Forwarded-Prefix"].ToString() : string.Empty;
-                        redirectUri = $"{proto}://{host}{pathBase}/home/index?token={token}";
-                    }
-                    else
-                    {
-                        redirectUri = "/home/index?token=" + token;
-                    }
+                    redirectUri = "/?token=" + token;
                     this.logger.Info($"Redirect uri:{redirectUri}");
                     return this.Challenge(
                         new AuthenticationProperties
