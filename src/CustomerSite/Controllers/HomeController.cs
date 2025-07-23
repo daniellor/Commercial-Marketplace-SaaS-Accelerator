@@ -301,11 +301,11 @@ public class HomeController : BaseController
                         var proto = Request.Headers["X-Forwarded-Proto"].ToString();
                         var host = Request.Headers["X-Forwarded-Host"].ToString();
                         var pathBase = Request.Headers.ContainsKey("X-Forwarded-Prefix") ? Request.Headers["X-Forwarded-Prefix"].ToString() : string.Empty;
-                        redirectUri = $"{proto}://{host}{pathBase}/?token={token}";
+                        redirectUri = $"{proto}://{host}{pathBase}/home/index?token={token}";
                     }
                     else
                     {
-                        redirectUri = "https://order-testing.hyperionsystem.app/?token=" + token;
+                        redirectUri = "/home/index?token=" + token;
                     }
                     this.logger.Info($"Redirect uri:{redirectUri}");
                     return this.Challenge(
