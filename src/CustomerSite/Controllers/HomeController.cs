@@ -205,7 +205,7 @@ public class HomeController : BaseController
             timeProvider,
             this.loggerFactory.CreateLogger<UnsubscribeStatusHandler>());
     }
-   
+
     /// <summary>
     /// Get All Subscription List for Current Logged in User.
     /// </summary>
@@ -224,8 +224,8 @@ public class HomeController : BaseController
             SubscriptionResult subscriptionDetail = new SubscriptionResult();
             SubscriptionResultExtension subscriptionExtension = new SubscriptionResultExtension();
 
-            //this.applicationConfigService.SaveFileToDisk("LogoFile", "contoso-sales.png");
-            //this.applicationConfigService.SaveFileToDisk("FaviconFile", "favicon.ico");
+            this.applicationConfigService.SaveFileToDisk("LogoFile", "contoso-sales.png");
+            this.applicationConfigService.SaveFileToDisk("FaviconFile", "favicon.ico");
 
             if (this.User.Identity.IsAuthenticated)
             {

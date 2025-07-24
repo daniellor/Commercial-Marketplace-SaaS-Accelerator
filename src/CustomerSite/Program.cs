@@ -83,9 +83,6 @@ public class Program
                 options.ExpireTimeSpan = TimeSpan.FromMinutes(60);
                 options.Cookie.MaxAge = options.ExpireTimeSpan;
                 options.SlidingExpiration = true;
-                options.Cookie.HttpOnly = true;
-                options.Cookie.SameSite = SameSiteMode.None;
-                options.Cookie.SecurePolicy = CookieSecurePolicy.None;
             })
             .AddOpenIdConnect(options =>
             {
@@ -137,11 +134,6 @@ public class Program
         //    context.Request.Scheme = "https";
         //    return next(context);
         //});
-        app.UseCookiePolicy(new CookiePolicyOptions
-        {
-            MinimumSameSitePolicy = SameSiteMode.None,
-            Secure = CookieSecurePolicy.Always,
-        }); 
         app.UseForwardedHeaders();
         if (app.Environment.IsDevelopment())
         {
@@ -155,7 +147,7 @@ public class Program
 
         app.UseHttpsRedirection();
         app.UseStaticFiles();
-        
+        app.UseCookiePolicy();
         app.UseAuthentication();
         app.UseMvc(routes =>
         {
