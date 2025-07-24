@@ -126,8 +126,8 @@ public class Program
         {
             options.ForwardedHeaders =
                 ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto | ForwardedHeaders.XForwardedHost | ForwardedHeaders.XForwardedPrefix;
-            options.KnownNetworks.Add(new Microsoft.AspNetCore.HttpOverrides.IPNetwork(IPAddress.Any, 0)); 
-            options.KnownNetworks.Add(new Microsoft.AspNetCore.HttpOverrides.IPNetwork(IPAddress.IPv6Any, 0)); 
+            options.KnownProxies.Add(IPAddress.Parse("172.21.0.1"));
+            options.KnownProxies.Add(IPAddress.Parse("10.0.0.4"));
 
         });
         var app = builder.Build();
@@ -136,10 +136,7 @@ public class Program
         //    context.Request.Scheme = "https";
         //    return next(context);
         //});
-        app.UseForwardedHeaders(new ForwardedHeadersOptions
-        {
-            ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto | ForwardedHeaders.XForwardedHost | ForwardedHeaders.XForwardedPrefix
-        });
+        app.UseForwardedHeaders();
         if (app.Environment.IsDevelopment())
         {
             app.UseDeveloperExceptionPage();
