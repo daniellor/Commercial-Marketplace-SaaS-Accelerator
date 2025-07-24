@@ -120,6 +120,7 @@ public class Program
             option.EnableEndpointRouting = false;
             option.Filters.Add(new AutoValidateAntiforgeryTokenAttribute());
         });
+        builder.Services.AddHttpLogging();
         builder.Services.Configure<ForwardedHeadersOptions>(options =>
         {
             options.ForwardedHeaders =
