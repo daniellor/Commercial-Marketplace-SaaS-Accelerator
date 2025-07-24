@@ -120,7 +120,6 @@ public class Program
             option.EnableEndpointRouting = false;
             option.Filters.Add(new AutoValidateAntiforgeryTokenAttribute());
         });
-        builder.Services.AddHttpLogging();
         builder.Services.Configure<ForwardedHeadersOptions>(options =>
         {
             options.ForwardedHeaders =
@@ -151,8 +150,6 @@ public class Program
                 name: "default",
                 template: "{controller=Home}/{action=Index}/{id?}");
         });
-        app.UseHttpLogging();
-        // Enable endpoint routing, required for the reverse proxy
         app.Run();
     }
 

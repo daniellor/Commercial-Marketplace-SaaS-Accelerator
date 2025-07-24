@@ -15,8 +15,6 @@ using Marketplace.SaaS.Accelerator.Services.Models;
 using Marketplace.SaaS.Accelerator.Services.Services;
 using Marketplace.SaaS.Accelerator.Services.StatusHandlers;
 using Marketplace.SaaS.Accelerator.Services.Utilities;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -300,11 +298,7 @@ public class HomeController : BaseController
                     // Instead of hardcoding the redirect URI, use the forwarded headers if present
                     var redirectUri = Url.Content("~/?token=" + token);
                     this.logger.Info($"Redirect uri:{redirectUri}");
-                    return this.Challenge(
-                        new AuthenticationProperties
-                        {
-                            RedirectUri = redirectUri,
-                        }, OpenIdConnectDefaults.AuthenticationScheme);
+                    return RedirectToAction("SignIn", "Account", new { returnUrl = redirectUri });
                 }
                 else
                 {
