@@ -89,9 +89,7 @@ public class Program
                 options.Authority = $"{config.AdAuthenticationEndPoint}/common/v2.0";
                 options.ClientId = config.MTClientId;
                 options.ResponseType = OpenIdConnectResponseType.IdToken;
-                //options.CallbackPath = "/Home/Index";
-                options.CallbackPath = "/";
-                options.SkipUnrecognizedRequests = true;
+                options.CallbackPath = "/Home/Index";
                 options.SignedOutRedirectUri = config.SignedOutRedirectUri;
                 options.TokenValidationParameters.NameClaimType = ClaimConstants.CLAIM_SHORT_NAME;
                 options.TokenValidationParameters.ValidateIssuer = false;

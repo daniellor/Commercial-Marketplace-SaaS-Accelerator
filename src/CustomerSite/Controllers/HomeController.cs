@@ -298,8 +298,7 @@ public class HomeController : BaseController
                     // Replace the selected code to support reverse proxy scenarios
 
                     // Instead of hardcoding the redirect URI, use the forwarded headers if present
-                    string redirectUri;
-                    redirectUri = "/?token=" + token;
+                    var redirectUri = Url.Content("~/?token=" + token);
                     this.logger.Info($"Redirect uri:{redirectUri}");
                     return this.Challenge(
                         new AuthenticationProperties
