@@ -136,7 +136,10 @@ public class Program
         //    context.Request.Scheme = "https";
         //    return next(context);
         //});
-        app.UseForwardedHeaders();
+        app.UseForwardedHeaders(new ForwardedHeadersOptions
+        {
+            ForwardedHeaders = ForwardedHeaders.XForwardedProto
+        });
         if (app.Environment.IsDevelopment())
         {
             app.UseDeveloperExceptionPage();
