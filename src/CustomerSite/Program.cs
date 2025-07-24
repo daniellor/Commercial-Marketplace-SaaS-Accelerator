@@ -138,7 +138,7 @@ public class Program
         //});
         app.UseForwardedHeaders(new ForwardedHeadersOptions
         {
-            ForwardedHeaders = ForwardedHeaders.XForwardedProto
+            ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto | ForwardedHeaders.XForwardedHost | ForwardedHeaders.XForwardedPrefix
         });
         if (app.Environment.IsDevelopment())
         {
