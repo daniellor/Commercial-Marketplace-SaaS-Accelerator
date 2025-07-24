@@ -218,6 +218,9 @@ public class HomeController : BaseController
         try
         {
             this.logger.Info(HttpUtility.HtmlEncode($"Landing page with token {token}"));
+            // Convert the headers to a string representation before logging  
+            this.logger.Info(HttpUtility.HtmlEncode($"Request Headers: {string.Join(", ", Request.Headers.Select(h => $"{h.Key}: {h.Value}"))}"));
+
             SubscriptionResult subscriptionDetail = new SubscriptionResult();
             SubscriptionResultExtension subscriptionExtension = new SubscriptionResultExtension();
 

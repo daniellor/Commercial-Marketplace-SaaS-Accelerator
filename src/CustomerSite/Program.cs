@@ -131,11 +131,11 @@ public class Program
 
         });
         var app = builder.Build();
-        app.Use((context, next) =>
-        {
-            context.Request.Scheme = "https";
-            return next(context);
-        });
+        //app.Use((context, next) =>
+        //{
+        //    context.Request.Scheme = "https";
+        //    return next(context);
+        //});
         app.UseForwardedHeaders();
         if (app.Environment.IsDevelopment())
         {
