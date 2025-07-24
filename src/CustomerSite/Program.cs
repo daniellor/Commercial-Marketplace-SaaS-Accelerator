@@ -129,11 +129,6 @@ public class Program
 
         });
         var app = builder.Build();
-        //app.Use((context, next) =>
-        //{
-        //    context.Request.Scheme = "https";
-        //    return next(context);
-        //});
         app.UseForwardedHeaders();
         if (app.Environment.IsDevelopment())
         {
@@ -155,7 +150,8 @@ public class Program
                 name: "default",
                 template: "{controller=Home}/{action=Index}/{id?}");
         });
-
+        app.UseHttpLogging();
+        // Enable endpoint routing, required for the reverse proxy
         app.Run();
     }
 
