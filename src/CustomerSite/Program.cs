@@ -87,8 +87,8 @@ public class Program
                 options.ExpireTimeSpan = TimeSpan.FromMinutes(60);
                 options.Cookie.MaxAge = options.ExpireTimeSpan;
                 options.SlidingExpiration = true;
-                //options.Cookie.HttpOnly = true;
-                //options.Cookie.SameSite = SameSiteMode.Lax;
+                options.Cookie.HttpOnly = true;
+                options.Cookie.SameSite = SameSiteMode.Strict;
                 //options.Cookie.SecurePolicy = CookieSecurePolicy.;
             })
             .AddOpenIdConnect(options =>
