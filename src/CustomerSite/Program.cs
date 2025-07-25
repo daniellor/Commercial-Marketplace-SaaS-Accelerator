@@ -55,7 +55,7 @@ public class Program
         {
             // This lambda determines whether user consent for non-essential cookies is needed for a given request.
            // options.CheckConsentNeeded = context => true;
-            options.MinimumSameSitePolicy = SameSiteMode.Strict;
+            options.MinimumSameSitePolicy = SameSiteMode.None;
         });
 
         var config = new SaaSApiClientConfiguration()
@@ -88,7 +88,7 @@ public class Program
                 options.Cookie.MaxAge = options.ExpireTimeSpan;
                 options.SlidingExpiration = true;
                 options.Cookie.HttpOnly = true;
-                options.Cookie.SameSite = SameSiteMode.Strict;
+                options.Cookie.SameSite = SameSiteMode.Lax;
                 //options.Cookie.SecurePolicy = CookieSecurePolicy.;
             })
             .AddOpenIdConnect(options =>
