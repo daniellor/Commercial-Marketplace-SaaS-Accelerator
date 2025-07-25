@@ -20,6 +20,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Microsoft.Marketplace.SaaS;
+using Serilog;
 using System;
 using System.Net;
 using System.Reflection;
@@ -46,6 +47,8 @@ public class Program
                 .AddDebug()
                 .AddConsole();
         });
+        builder.Host.UseSerilog((hostingContext, loggerConfiguration) =>
+                           loggerConfiguration.ReadFrom.Configuration(hostingContext.Configuration));
 
         builder.Services.Configure<CookiePolicyOptions>(options =>
         {
@@ -137,7 +140,7 @@ public class Program
         else
         {
             app.UseExceptionHandler("/Home/Error");
-           // app.UseHsts();
+            app.UseHsts();
         }
 
         app.UseHttpsRedirection();
