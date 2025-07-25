@@ -49,7 +49,7 @@ public class Program
         });
         builder.Host.UseSerilog((hostingContext, loggerConfiguration) =>
                            loggerConfiguration.ReadFrom.Configuration(hostingContext.Configuration));
-
+        builder.Services.AddHttpLogging(_ => { });
         builder.Services.Configure<CookiePolicyOptions>(options =>
         {
             // This lambda determines whether user consent for non-essential cookies is needed for a given request.
@@ -147,6 +147,7 @@ public class Program
         app.UseStaticFiles();
         app.UseCookiePolicy();
         app.UseAuthentication();
+        app.UseHttpLogging();
         app.UseMvc(routes =>
         {
             routes.MapRoute(
