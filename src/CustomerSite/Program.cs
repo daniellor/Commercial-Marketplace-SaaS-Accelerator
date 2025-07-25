@@ -88,9 +88,12 @@ public class Program
                 options.ExpireTimeSpan = TimeSpan.FromMinutes(60);
                 options.Cookie.MaxAge = options.ExpireTimeSpan;
                 options.SlidingExpiration = true;
-                //options.Cookie.HttpOnly = true;
-                //options.Cookie.SameSite = SameSiteMode.Lax;
-                options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+                options.Cookie.Name = "SaasKit.CustomerSite";// change name to hide .net identifiers in name
+                options.Cookie.HttpOnly = true;// make so client cannot alter cookie
+                options.Cookie.SecurePolicy = CookieSecurePolicy.Always;// require https
+                options.Cookie.SameSite = SameSiteMode.Lax;// from external resource
+                                                              // verify options are valid or throw exception 
+                options.Validate();
             })
             .AddOpenIdConnect(options =>
             {
