@@ -84,12 +84,12 @@ public class Program
             })
             .AddCookie(options =>
             {
-                //options.ExpireTimeSpan = TimeSpan.FromMinutes(60);
-                //options.Cookie.MaxAge = options.ExpireTimeSpan;
-                //options.SlidingExpiration = true;
+                options.ExpireTimeSpan = TimeSpan.FromDays(60);
+                options.Cookie.MaxAge = options.ExpireTimeSpan;
+                options.SlidingExpiration = true;
                 //options.Cookie.HttpOnly = true;
-                //options.Cookie.SameSite = SameSiteMode.None;
-                //options.Cookie.SecurePolicy = CookieSecurePolicy.None;
+                //options.Cookie.SameSite = SameSiteMode.Lax;
+                //options.Cookie.SecurePolicy = CookieSecurePolicy.;
             })
             .AddOpenIdConnect(options =>
             {
@@ -158,7 +158,7 @@ public class Program
         app.UseStaticFiles();
         
         app.UseAuthentication();
-        //app.UseCookiePolicy();
+        app.UseCookiePolicy();
         app.UseHttpLogging();
         app.UseMvc(routes =>
         {
