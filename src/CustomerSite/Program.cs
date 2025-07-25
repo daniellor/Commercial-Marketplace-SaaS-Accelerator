@@ -79,8 +79,8 @@ public class Program
             .AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = OpenIdConnectDefaults.AuthenticationScheme;
-                options.DefaultSignInScheme = OpenIdConnectDefaults.AuthenticationScheme;
-                options.DefaultChallengeScheme = OpenIdConnectDefaults.AuthenticationScheme;
+                options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = CookieAuthenticationDefaults.AuthenticationScheme;
             })
             .AddCookie(options =>
             {
