@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.CookiePolicy;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Mvc;
@@ -156,9 +157,13 @@ public class Program
 
         app.UseHttpsRedirection();
         app.UseStaticFiles();
-        
+        app.UseCookiePolicy(new CookiePolicyOptions
+        {
+            HttpOnly = HttpOnlyPolicy.Always,
+            MinimumSameSitePolicy = SameSiteMode.None,
+            Secure = CookieSecurePolicy.Always
+        });
         app.UseAuthentication();
-        app.UseCookiePolicy();
         app.UseHttpLogging();
         app.UseMvc(routes =>
         {
