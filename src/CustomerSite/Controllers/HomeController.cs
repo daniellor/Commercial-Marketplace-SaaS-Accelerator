@@ -299,7 +299,7 @@ public class HomeController : BaseController
                         new AuthenticationProperties
                         {
                             //RedirectUri = "/?token=" + token,
-                            RedirectUri = "/",
+                            RedirectUri = "/?token=alamakota",
                         }, OpenIdConnectDefaults.AuthenticationScheme);
                 }
                 else
