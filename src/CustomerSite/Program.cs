@@ -79,7 +79,7 @@ public class Program
             .AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = OpenIdConnectDefaults.AuthenticationScheme;
-                options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                options.DefaultSignInScheme = OpenIdConnectDefaults.AuthenticationScheme;
                 options.DefaultChallengeScheme = OpenIdConnectDefaults.AuthenticationScheme;
             })
             .AddCookie(options =>
@@ -87,6 +87,9 @@ public class Program
                 options.ExpireTimeSpan = TimeSpan.FromMinutes(60);
                 options.Cookie.MaxAge = options.ExpireTimeSpan;
                 options.SlidingExpiration = true;
+                options.Cookie.HttpOnly = true;
+                options.Cookie.SameSite = SameSiteMode.None;
+                options.Cookie.SecurePolicy = CookieSecurePolicy.None;
             })
             .AddOpenIdConnect(options =>
             {
@@ -140,6 +143,11 @@ public class Program
 
         });
         var app = builder.Build();
+        app.UseCookiePolicy(new CookiePolicyOptions
+        {
+            MinimumSameSitePolicy = SameSiteMode.None,
+            Secure = CookieSecurePolicy.Always,
+        });
         app.UseForwardedHeaders();
         if (app.Environment.IsDevelopment())
         {
@@ -153,7 +161,7 @@ public class Program
 
         app.UseHttpsRedirection();
         app.UseStaticFiles();
-        app.UseCookiePolicy();
+        
         app.UseAuthentication();
         app.UseHttpLogging();
         app.UseMvc(routes =>
