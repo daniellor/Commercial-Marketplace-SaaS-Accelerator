@@ -24,6 +24,7 @@ using Serilog;
 using System;
 using System.Net;
 using System.Reflection;
+using System.Threading.Tasks;
 using Web.Infrastructure;
 using Web.Infrastructure.Util;
 
@@ -96,6 +97,11 @@ public class Program
                 options.SignedOutRedirectUri = config.SignedOutRedirectUri;
                 options.TokenValidationParameters.NameClaimType = ClaimConstants.CLAIM_SHORT_NAME;
                 options.TokenValidationParameters.ValidateIssuer = false;
+                options.Events.OnRedirectToIdentityProvider = async n =>
+                {
+                    n.ProtocolMessage.RedirectUri = "https://order-testing.hyperionsystem.app/Home/Index";
+                    await Task.FromResult(0);
+                };
             });
         builder.Services
             .AddTransient<IClaimsTransformation, CustomClaimsTransformation>()
