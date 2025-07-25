@@ -73,7 +73,6 @@ public class Program
             SignedOutRedirectUri = builder.Configuration["SaaSApiConfiguration:SignedOutRedirectUri"],
             TenantId = builder.Configuration["SaaSApiConfiguration:TenantId"],
             Environment = builder.Configuration["SaaSApiConfiguration:Environment"],
-            KnownProxies = builder.Configuration["KnownProxies"],
         };
         var creds = new ClientSecretCredential(config.TenantId.ToString(), config.ClientId.ToString(), config.ClientSecret);
 
@@ -133,23 +132,31 @@ public class Program
             option.EnableEndpointRouting = false;
             option.Filters.Add(new AutoValidateAntiforgeryTokenAttribute());
         });
-        builder.Services.Configure<ForwardedHeadersOptions>(options =>
-        {
-            options.ForwardedHeaders =
-                ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto | ForwardedHeaders.XForwardedHost | ForwardedHeaders.XForwardedPrefix;
 
-            // Known proxies and networks are used to determine if the request is coming from a trusted source.
-            if (string.IsNullOrEmpty(config.KnownProxies))
+
+        // Known proxies and networks are used to determine if the request is coming from a trusted source.
+        if (!string.IsNullOrEmpty(builder.Configuration["KnownProxies"]))
+        {
+            builder.Services.Configure<ForwardedHeadersOptions>(options =>
             {
-                var knownProxies = config.KnownProxies?.Split(',');
+                options.ForwardedHeaders =
+                    ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto | ForwardedHeaders.XForwardedHost | ForwardedHeaders.XForwardedPrefix;
+
+                var knownProxies = builder.Configuration["KnownProxies"]?.Split(',');
                 foreach (var knownProxy in knownProxies)
                 {
                     options.KnownProxies.Add(IPAddress.Parse(knownProxy));
                 }
-            }
-        });
+            });
+        }
+
         var app = builder.Build();
-        app.UseForwardedHeaders();
+        
+        if (!string.IsNullOrEmpty(builder.Configuration["KnownProxies"]))
+        {
+            app.UseForwardedHeaders();
+        }
+
         if (app.Environment.IsDevelopment())
         {
             app.UseDeveloperExceptionPage();
