@@ -12,6 +12,7 @@ using Marketplace.SaaS.Accelerator.Services.Utilities;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Diagnostics;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
@@ -213,10 +214,14 @@ public class HomeController : BaseController
     /// <returns>
     /// The <see cref="IActionResult" />.
     /// </returns>
-    public async Task<IActionResult> Index(string token = null)
+    public async Task<IActionResult> Index(string token = null, string session = null)
     {
         try
         {
+            if (!string.IsNullOrEmpty(session))
+            {
+                token = HttpContext.Session.GetString(session);
+            }
             this.logger.Info(HttpUtility.HtmlEncode($"Landing page with token {token}"));
             // Convert the headers to a string representation before logging  
             this.logger.Info(HttpUtility.HtmlEncode($"Request Headers: {string.Join(", ", Request.Headers.Select(h => $"{h.Key}: {h.Value}"))}"));
@@ -295,11 +300,13 @@ public class HomeController : BaseController
             {
                 if (!string.IsNullOrEmpty(token))
                 {
+                    var sessionKey = $"t{Guid.NewGuid()}";
+                    HttpContext.Session.SetString(sessionKey, token);
+
                     return this.Challenge(
                         new AuthenticationProperties
                         {
-                            //RedirectUri = "/?token=" + token,
-                            RedirectUri = "/?token=alamakota",
+                            RedirectUri = $"/?session={sessionKey}",
                         }, OpenIdConnectDefaults.AuthenticationScheme);
                 }
                 else

@@ -104,14 +104,13 @@ public class Program
                 options.SignedOutRedirectUri = config.SignedOutRedirectUri;
                 options.TokenValidationParameters.NameClaimType = ClaimConstants.CLAIM_SHORT_NAME;
                 options.TokenValidationParameters.ValidateIssuer = false;
-                //options.SaveTokens = true;
-                //options.RequireHttpsMetadata = true; // If your proxy terminates SSL
-                //options.Events.OnRedirectToIdentityProvider = async n =>
-                //{
-                //    n.ProtocolMessage.RedirectUri = "https://order-testing.hyperionsystem.app/Home/Index";
-                //    await Task.FromResult(0);
-                //};
             });
+        builder.Services.AddSession(options =>
+        {
+            options.Cookie.Name = "SaasKit.CustomerSite.Session";
+            options.IdleTimeout = TimeSpan.FromSeconds(10);
+            options.Cookie.IsEssential = true;
+        });
         builder.Services
             .AddTransient<IClaimsTransformation, CustomClaimsTransformation>()
             .AddScoped<ExceptionHandlerAttribute>()
@@ -167,6 +166,7 @@ public class Program
             Secure = CookieSecurePolicy.Always
         });
         app.UseAuthentication();
+        app.UseSession();
         app.UseHttpLogging();
         app.UseMvc(routes =>
         {
