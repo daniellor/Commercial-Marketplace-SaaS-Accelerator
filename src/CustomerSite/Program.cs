@@ -105,12 +105,7 @@ public class Program
                 options.TokenValidationParameters.NameClaimType = ClaimConstants.CLAIM_SHORT_NAME;
                 options.TokenValidationParameters.ValidateIssuer = false;
             });
-        builder.Services.AddSession(options =>
-        {
-            options.Cookie.Name = "SaasKit.CustomerSite.Session";
-            options.IdleTimeout = TimeSpan.FromSeconds(10);
-            options.Cookie.IsEssential = true;
-        });
+        
         builder.Services
             .AddTransient<IClaimsTransformation, CustomClaimsTransformation>()
             .AddScoped<ExceptionHandlerAttribute>()
@@ -166,7 +161,6 @@ public class Program
             Secure = CookieSecurePolicy.Always
         });
         app.UseAuthentication();
-        app.UseSession();
         app.UseHttpLogging();
         app.UseMvc(routes =>
         {

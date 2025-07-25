@@ -220,12 +220,12 @@ public class HomeController : BaseController
         {
             if (!string.IsNullOrEmpty(session))
             {
-                token = HttpContext.Session.GetString(session);
+                token = HttpContext.Request.Cookies[session];
+                this.logger.Info(HttpUtility.HtmlEncode($"Token from cookie {token}"));
+                HttpContext.Response.Cookies.Delete(session);
             }
             this.logger.Info(HttpUtility.HtmlEncode($"Landing page with token {token}"));
-            // Convert the headers to a string representation before logging  
-            this.logger.Info(HttpUtility.HtmlEncode($"Request Headers: {string.Join(", ", Request.Headers.Select(h => $"{h.Key}: {h.Value}"))}"));
-
+            
             SubscriptionResult subscriptionDetail = new SubscriptionResult();
             SubscriptionResultExtension subscriptionExtension = new SubscriptionResultExtension();
 
@@ -301,7 +301,12 @@ public class HomeController : BaseController
                 if (!string.IsNullOrEmpty(token))
                 {
                     var sessionKey = $"t{Guid.NewGuid()}";
-                    HttpContext.Session.SetString(sessionKey, token);
+                    HttpContext.Response.Cookies.Append(sessionKey, token, new CookieOptions
+                    {
+                        Expires = DateTimeOffset.UtcNow.AddMinutes(30),
+                        HttpOnly = true, // Accessible only by the server
+                        IsEssential = true // Required for GDPR compliance
+                    });
 
                     return this.Challenge(
                         new AuthenticationProperties
