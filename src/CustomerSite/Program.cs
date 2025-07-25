@@ -54,7 +54,7 @@ public class Program
         builder.Services.Configure<CookiePolicyOptions>(options =>
         {
             // This lambda determines whether user consent for non-essential cookies is needed for a given request.
-           // options.CheckConsentNeeded = context => true;
+            options.CheckConsentNeeded = context => true;
             options.MinimumSameSitePolicy = SameSiteMode.None;
         });
 
@@ -87,9 +87,9 @@ public class Program
                 options.ExpireTimeSpan = TimeSpan.FromMinutes(60);
                 options.Cookie.MaxAge = options.ExpireTimeSpan;
                 options.SlidingExpiration = true;
-                options.Cookie.HttpOnly = true;
-                options.Cookie.SameSite = SameSiteMode.Lax;
-                //options.Cookie.SecurePolicy = CookieSecurePolicy.;
+                //options.Cookie.HttpOnly = true;
+                //options.Cookie.SameSite = SameSiteMode.Lax;
+                options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
             })
             .AddOpenIdConnect(options =>
             {
