@@ -298,7 +298,8 @@ public class HomeController : BaseController
                     return this.Challenge(
                         new AuthenticationProperties
                         {
-                            RedirectUri = "/?token=" + token,
+                            //RedirectUri = "/?token=" + token,
+                            RedirectUri = "/",
                         }, OpenIdConnectDefaults.AuthenticationScheme);
                 }
                 else
