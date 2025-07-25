@@ -136,9 +136,6 @@ public class Program
         {
             options.ForwardedHeaders =
                 ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto | ForwardedHeaders.XForwardedHost | ForwardedHeaders.XForwardedPrefix;
-            options.KnownProxies.Add(IPAddress.Parse("172.21.0.1"));
-            options.KnownProxies.Add(IPAddress.Parse("10.0.0.4"));
-
         });
         var app = builder.Build();
         app.UseForwardedHeaders();
