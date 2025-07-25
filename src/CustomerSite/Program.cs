@@ -80,7 +80,7 @@ public class Program
             {
                 options.DefaultAuthenticateScheme = OpenIdConnectDefaults.AuthenticationScheme;
                 options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-                options.DefaultChallengeScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = OpenIdConnectDefaults.AuthenticationScheme;
             })
             .AddCookie(options =>
             {
@@ -97,11 +97,13 @@ public class Program
                 options.SignedOutRedirectUri = config.SignedOutRedirectUri;
                 options.TokenValidationParameters.NameClaimType = ClaimConstants.CLAIM_SHORT_NAME;
                 options.TokenValidationParameters.ValidateIssuer = false;
-                options.Events.OnRedirectToIdentityProvider = async n =>
-                {
-                    n.ProtocolMessage.RedirectUri = "https://order-testing.hyperionsystem.app/Home/Index";
-                    await Task.FromResult(0);
-                };
+                options.SaveTokens = true;
+                options.RequireHttpsMetadata = true; // If your proxy terminates SSL
+                //options.Events.OnRedirectToIdentityProvider = async n =>
+                //{
+                //    n.ProtocolMessage.RedirectUri = "https://order-testing.hyperionsystem.app/Home/Index";
+                //    await Task.FromResult(0);
+                //};
             });
         builder.Services
             .AddTransient<IClaimsTransformation, CustomClaimsTransformation>()
