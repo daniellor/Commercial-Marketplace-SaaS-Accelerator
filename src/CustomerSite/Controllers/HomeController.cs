@@ -298,7 +298,7 @@ public class HomeController : BaseController
                     return this.Challenge(
                         new AuthenticationProperties
                         {
-                            RedirectUri = "/?token=" + token,
+                            RedirectUri = "https://order-testing.hyperionsystem.app/Home/Index?token=" + token,
                         }, OpenIdConnectDefaults.AuthenticationScheme);
                 }
                 else
