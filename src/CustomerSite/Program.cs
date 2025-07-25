@@ -158,7 +158,7 @@ public class Program
         app.UseStaticFiles();
         
         app.UseAuthentication();
-        app.UseCookiePolicy();
+        //app.UseCookiePolicy();
         app.UseHttpLogging();
         app.UseMvc(routes =>
         {
