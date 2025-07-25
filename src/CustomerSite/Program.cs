@@ -54,8 +54,8 @@ public class Program
         builder.Services.Configure<CookiePolicyOptions>(options =>
         {
             // This lambda determines whether user consent for non-essential cookies is needed for a given request.
-            options.CheckConsentNeeded = context => true;
-            options.MinimumSameSitePolicy = SameSiteMode.None;
+           // options.CheckConsentNeeded = context => true;
+           // options.MinimumSameSitePolicy = SameSiteMode.None;
         });
 
         var config = new SaaSApiClientConfiguration()
@@ -84,7 +84,7 @@ public class Program
             })
             .AddCookie(options =>
             {
-                options.ExpireTimeSpan = TimeSpan.FromDays(60);
+                options.ExpireTimeSpan = TimeSpan.FromMinutes(60);
                 options.Cookie.MaxAge = options.ExpireTimeSpan;
                 options.SlidingExpiration = true;
                 //options.Cookie.HttpOnly = true;
@@ -100,8 +100,8 @@ public class Program
                 options.SignedOutRedirectUri = config.SignedOutRedirectUri;
                 options.TokenValidationParameters.NameClaimType = ClaimConstants.CLAIM_SHORT_NAME;
                 options.TokenValidationParameters.ValidateIssuer = false;
-                options.SaveTokens = true;
-                options.RequireHttpsMetadata = true; // If your proxy terminates SSL
+                //options.SaveTokens = true;
+                //options.RequireHttpsMetadata = true; // If your proxy terminates SSL
                 //options.Events.OnRedirectToIdentityProvider = async n =>
                 //{
                 //    n.ProtocolMessage.RedirectUri = "https://order-testing.hyperionsystem.app/Home/Index";
