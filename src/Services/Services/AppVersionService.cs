@@ -13,11 +13,12 @@ public class AppVersionService : IAppVersionService
 {
 
     public string Version { get; }
+    public string BuildLink { get; }
 
     /// <summary>
     /// Sets the Application Version.
     /// </summary>
-    public AppVersionService(Version version)
+    public AppVersionService(Version version, string buildLink)
     {
         if (version != null)
         {
@@ -27,5 +28,7 @@ public class AppVersionService : IAppVersionService
         {
             Version = "1.0.0";
         }
+
+        BuildLink = buildLink;
     }
 }

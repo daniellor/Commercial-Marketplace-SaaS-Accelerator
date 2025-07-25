@@ -1,0 +1,41 @@
+# Docker workflow for SaaS Accelerator
+# This workflow builds and pushes Docker images for the AdminSite and CustomerSite components of the SaaS Accelerator project.
+# It is triggered on every push to the repository.
+#https://learn.microsoft.com/en-us/azure/container-instances/container-instances-github-action
+on: [push]
+name: Linux_Container_Workflow
+
+jobs:
+    build-and-deploy:
+        runs-on: ubuntu-latest
+        steps:
+        # checkout the repo
+        - name: 'Checkout GitHub Action'
+          uses: actions/checkout@main
+          
+        - name: 'Login via Azure CLI'
+          uses: azure/login@v1
+          with:
+            creds: ${{ secrets.AZURE_CREDENTIALS }}
+        
+        - name: 'Build and push image AdminSite'
+          uses: azure/docker-login@v1
+          with:
+            login-server: ${{ secrets.REGISTRY_LOGIN_SERVER }}
+            username: ${{ secrets.REGISTRY_USERNAME }}
+            password: ${{ secrets.REGISTRY_PASSWORD }}
+        - run: |
+             cd src
+             docker build . -f AdminSite/Dockerfile -t ${{ secrets.REGISTRY_LOGIN_SERVER }}/saasaccelerator-adminsite:${GITHUB_REF##*/}
+             docker push ${{ secrets.REGISTRY_LOGIN_SERVER }}/saasaccelerator-adminsite:${GITHUB_REF##*/}
+        
+        - name: 'Build and push image CustomerSite'
+          uses: azure/docker-login@v1
+          with:
+            login-server: ${{ secrets.REGISTRY_LOGIN_SERVER }}
+            username: ${{ secrets.REGISTRY_USERNAME }}
+            password: ${{ secrets.REGISTRY_PASSWORD }}
+        - run: |
+            cd src
+            docker build . -f CustomerSite/Dockerfile  -t ${{ secrets.REGISTRY_LOGIN_SERVER }}/saasaccelerator-customersite:${GITHUB_REF##*/}
+            docker push ${{ secrets.REGISTRY_LOGIN_SERVER }}/saasaccelerator-customersite:${GITHUB_REF##*/}

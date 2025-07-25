@@ -10,6 +10,6 @@ public partial class MeteringUsageRequestAttributes
     public double Quantity { get; set; }
     public Guid ResourceId { get; set; }
     public string Dimension { get; set; }
-    public DateTime EffectiveStartTime { get; set; }
+    public DateTimeOffset EffectiveStartTime { get; set; }
     public string PlanId { get; set; }
 }

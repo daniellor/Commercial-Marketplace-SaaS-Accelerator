@@ -46,7 +46,7 @@ public class BaseController : Controller
                 TempData["SupportMeteredBilling"] = "0";
             }
         }
-        ViewData["AppVersion"] = appVersionService?.Version;
+        ViewData["AppVersion"] = appVersionService?.BuildLink;
         base.OnActionExecuting(filterContext);
     }
     /// <summary>
@@ -142,6 +142,6 @@ public class BaseController : Controller
     /// </value>
     public string GetAppReleaseVersion()
     {
-        return this.appVersionService?.Version;
+        return this.appVersionService?.BuildLink;
     }
 }

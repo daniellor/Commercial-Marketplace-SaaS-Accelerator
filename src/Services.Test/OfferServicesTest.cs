@@ -60,7 +60,7 @@ public class OfferServicesTest
 
         return new Offers()
         {
-            CreateDate = DateTime.Now,
+            CreateDate = DateTime.UtcNow,
             Id = testOfferModelCount,
             OfferName = "OfferName",
             OfferGuid = offerId,
@@ -101,7 +101,7 @@ public class OfferServicesTest
     {
         return new OfferAttributes()
         {
-            CreateDate = DateTime.Now,
+            CreateDate = DateTime.UtcNow,
             Description = "Description",
             DisplayName = "DisplayName",
             DisplaySequence = idCounter,
@@ -110,7 +110,7 @@ public class OfferServicesTest
             OfferId = Guid.NewGuid(),
             UserId = 1,
             IsDelete = false,
-            Isactive = true,
+            IsActive = true,
             IsRequired = false,
             Max = 1,
             Min = 1,

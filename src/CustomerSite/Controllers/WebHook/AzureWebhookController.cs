@@ -98,7 +98,8 @@ public class AzureWebhookController : ControllerBase
                                   ISubscriptionsRepository subscriptionsRepository, 
                                   SaaSApiClientConfiguration configuration,
                                   ValidateJwtToken validateJwtToken,
-                                  IApplicationConfigRepository applicationConfigRepository)
+                                  IApplicationConfigRepository applicationConfigRepository,
+                                  TimeProvider timeProvider)
     {
         this.applicationLogRepository = applicationLogRepository;
         this.subscriptionsRepository = subscriptionsRepository;
@@ -106,8 +107,8 @@ public class AzureWebhookController : ControllerBase
         this.planRepository = planRepository;
         this.subscriptionsLogRepository = subscriptionsLogRepository;
         this.webhookProcessor = webhookProcessor;
-        this.applicationLogService = new ApplicationLogService(this.applicationLogRepository);
-        this.subscriptionService = new SubscriptionService(this.subscriptionsRepository, this.planRepository);
+        this.applicationLogService = new ApplicationLogService(this.applicationLogRepository, timeProvider);
+        this.subscriptionService = new SubscriptionService(this.subscriptionsRepository, this.planRepository, timeProvider);
         this.validateJwtToken = validateJwtToken;
         this.applicationConfigRepository = applicationConfigRepository;
         this.applicationConfigService = new ApplicationConfigService(this.applicationConfigRepository);

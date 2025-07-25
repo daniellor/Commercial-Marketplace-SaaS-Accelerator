@@ -57,7 +57,7 @@ public class OfferAttributesRepository : IOfferAttributesRepository
                 existingOfferAttribute.Min = offerAttributes.Min;
                 existingOfferAttribute.Type = offerAttributes.Type;
                 existingOfferAttribute.DisplaySequence = offerAttributes.DisplaySequence;
-                existingOfferAttribute.Isactive = offerAttributes.Isactive;
+                existingOfferAttribute.IsActive = offerAttributes.IsActive;
                 existingOfferAttribute.UserId = offerAttributes.UserId;
                 existingOfferAttribute.OfferId = offerAttributes.OfferId;
                 existingOfferAttribute.IsRequired = offerAttributes.IsRequired;

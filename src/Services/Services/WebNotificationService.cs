@@ -48,12 +48,12 @@ public class WebNotificationService : IWebNotificationService
     /// <param name="saaSApiClientConfiguration">saaSApiClientConfiguration.</param>
     public WebNotificationService(IFulfillmentApiService apiService,
                                   IApplicationConfigRepository applicationConfigRepository,
-                                  IApplicationLogRepository applicationLogRepository)
+                                  IApplicationLogRepository applicationLogRepository, TimeProvider timeProvider)
     {
         this.apiService = apiService;
         this.applicationConfigRepository = applicationConfigRepository;
         this.applicationLogRepository = applicationLogRepository;
-        this.applicationLogService = new ApplicationLogService(this.applicationLogRepository);
+        this.applicationLogService = new ApplicationLogService(this.applicationLogRepository, timeProvider);
 
     }
 

@@ -46,7 +46,7 @@ public partial class SchedulerManagerViewModel
     /// <value>
     /// plan identifier.
     /// </value>
-    public string PlanId { get; set; }
+    public int? PlanId { get; set; }
     /// <summary>
     /// Gets or sets Dimension identifier.
     /// </summary>
@@ -67,21 +67,21 @@ public partial class SchedulerManagerViewModel
     /// <value>
     /// Quantity.
     /// </value>
-    public double Quantity { get; set; }
+    public double? Quantity { get; set; }
     /// <summary>
     /// Gets or sets Start Date.
     /// </summary>
     /// <value>
     /// Schedule Start date.
     /// </value>
-    public DateTime StartDate { get; set; }
+    public DateTimeOffset? StartDate { get; set; }
     /// <summary>
     /// Gets or sets schedule next run datatime.
     /// </summary>
     /// <value>
     /// schedule next run.
     /// </value>
-    public DateTime? NextRunTime { get; set; }
+    public DateTimeOffset? NextRunTime { get; set; }
 
     /// <summary>
     /// Gets or sets schedule last run datatime.
@@ -89,5 +89,5 @@ public partial class SchedulerManagerViewModel
     /// <value>
     /// schedule last run.
     /// </value>
-    public DateTime? LastRunTime { get; set; }
+    public DateTimeOffset? LastRunTime { get; set; }
 }

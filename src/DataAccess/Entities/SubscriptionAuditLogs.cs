@@ -9,7 +9,7 @@ public partial class SubscriptionAuditLogs
     public string Attribute { get; set; }
     public string OldValue { get; set; }
     public string NewValue { get; set; }
-    public DateTime? CreateDate { get; set; }
+    public DateTimeOffset CreateDate { get; set; }
     public int? CreateBy { get; set; }
 
     public virtual Subscriptions Subscription { get; set; }

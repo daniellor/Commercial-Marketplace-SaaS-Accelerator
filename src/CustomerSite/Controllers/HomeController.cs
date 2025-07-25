@@ -1,12 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE file in the project root for license information.
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text.Json;
-using System.Threading.Tasks;
-using System.Web;
 using Marketplace.SaaS.Accelerator.DataAccess.Contracts;
 using Marketplace.SaaS.Accelerator.DataAccess.Entities;
 using Marketplace.SaaS.Accelerator.Services.Contracts;
@@ -18,8 +12,15 @@ using Marketplace.SaaS.Accelerator.Services.Utilities;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Diagnostics;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text.Json;
+using System.Threading.Tasks;
+using System.Web;
 
 namespace Marketplace.SaaS.Accelerator.CustomerSite.Controllers;
 
@@ -89,7 +90,7 @@ public class HomeController : BaseController
     private readonly ILoggerFactory loggerFactory;
 
     private readonly IWebNotificationService _webNotificationService;
-
+    private readonly TimeProvider timeProvider;
     private SubscriptionService subscriptionService = null;
 
     private ApplicationLogService applicationLogService = null;
@@ -137,6 +138,7 @@ public class HomeController : BaseController
         ILoggerFactory loggerFactory, 
         IEmailService emailService,
         IWebNotificationService webNotificationService,
+        TimeProvider timeProvider,
         IAppVersionService appVersionService) : base(appVersionService)
     {
         this.apiService = apiService;
@@ -145,9 +147,9 @@ public class HomeController : BaseController
         this.applicationLogRepository = applicationLogRepository;
         this.planRepository = planRepository;
         this.userRepository = userRepository;
-        this.userService = new UserService(this.userRepository);
-        this.subscriptionService = new SubscriptionService(this.subscriptionRepository, this.planRepository);
-        this.applicationLogService = new ApplicationLogService(this.applicationLogRepository);
+        this.userService = new UserService(this.userRepository, timeProvider);
+        this.subscriptionService = new SubscriptionService(this.subscriptionRepository, this.planRepository, timeProvider);
+        this.applicationLogService = new ApplicationLogService(this.applicationLogRepository, timeProvider);
         this.applicationConfigRepository = applicationConfigRepository;
         this.applicationConfigService = new ApplicationConfigService(this.applicationConfigRepository);
         this.emailTemplateRepository = emailTemplateRepository;
@@ -155,18 +157,19 @@ public class HomeController : BaseController
         this.offerAttributesRepository = offerAttributesRepository;
         this.logger = logger;
         this.offersRepository = offersRepository;
-        this.planService = new PlanService(this.planRepository, this.offerAttributesRepository, this.offersRepository);
+        this.planService = new PlanService(this.planRepository, this.offerAttributesRepository, this.offersRepository, timeProvider);
         this.eventsRepository = eventsRepository;
         this.emailService = emailService;
         this.loggerFactory = loggerFactory;
         this._webNotificationService = webNotificationService;
-
+        this.timeProvider = timeProvider;
         this.pendingActivationStatusHandlers = new PendingActivationStatusHandler(
             apiService,
             subscriptionRepo,
             subscriptionLogsRepo,
             planRepository,
             userRepository,
+            timeProvider,
             loggerFactory.CreateLogger<PendingActivationStatusHandler>());
 
         this.pendingFulfillmentStatusHandlers = new PendingFulfillmentStatusHandler(
@@ -176,6 +179,7 @@ public class HomeController : BaseController
             subscriptionLogsRepo,
             planRepository,
             userRepository,
+            timeProvider,
             this.loggerFactory.CreateLogger<PendingFulfillmentStatusHandler>());
 
         this.notificationStatusHandlers = new NotificationStatusHandler(
@@ -190,6 +194,7 @@ public class HomeController : BaseController
             userRepository,
             offersRepository,
             emailService,
+            timeProvider,
             this.loggerFactory.CreateLogger<NotificationStatusHandler>());
 
         this.unsubscribeStatusHandlers = new UnsubscribeStatusHandler(
@@ -198,6 +203,7 @@ public class HomeController : BaseController
             subscriptionLogsRepo,
             planRepository,
             userRepository,
+            timeProvider,
             this.loggerFactory.CreateLogger<UnsubscribeStatusHandler>());
     }
 
@@ -208,11 +214,18 @@ public class HomeController : BaseController
     /// <returns>
     /// The <see cref="IActionResult" />.
     /// </returns>
-    public async Task<IActionResult> Index(string token = null)
+    public async Task<IActionResult> Index(string token = null, string session = null)
     {
         try
         {
+            if (!string.IsNullOrEmpty(session))
+            {
+                token = HttpContext.Request.Cookies[session];
+                this.logger.Info(HttpUtility.HtmlEncode($"Token from cookie {token}"));
+                HttpContext.Response.Cookies.Delete(session);
+            }
             this.logger.Info(HttpUtility.HtmlEncode($"Landing page with token {token}"));
+            
             SubscriptionResult subscriptionDetail = new SubscriptionResult();
             SubscriptionResultExtension subscriptionExtension = new SubscriptionResultExtension();
 
@@ -223,7 +236,7 @@ public class HomeController : BaseController
             {
                 var userId = this.userService.AddUser(this.GetCurrentUserDetail());
                 var currentUserId = this.userService.GetUserIdFromEmailAddress(this.CurrentUserEmailAddress);
-                this.subscriptionService = new SubscriptionService(this.subscriptionRepository, this.planRepository, userId);
+                this.subscriptionService = new SubscriptionService(this.subscriptionRepository, this.planRepository, this.timeProvider, userId);
                 this.logger.Info("User authenticated successfully");
                 if (!string.IsNullOrEmpty(token))
                 {
@@ -237,7 +250,7 @@ public class HomeController : BaseController
                             OfferId = newSubscription.OfferId,
                             OfferName = newSubscription.OfferId,
                             UserId = currentUserId,
-                            CreateDate = DateTime.Now,
+                            CreateDate = timeProvider.GetUtcNow(),
                             OfferGuid = Guid.NewGuid(),
                         };
                         Guid newOfferId = this.offersRepository.Add(offers);
@@ -262,7 +275,7 @@ public class HomeController : BaseController
                                 NewValue = SubscriptionStatusEnum.PendingFulfillmentStart.ToString(),
                                 OldValue = "None",
                                 CreateBy = currentUserId,
-                                CreateDate = DateTime.Now,
+                                CreateDate = timeProvider.GetUtcNow(),
                             };
                             this.subscriptionLogRepository.Save(auditLog);
                         }
@@ -287,10 +300,18 @@ public class HomeController : BaseController
             {
                 if (!string.IsNullOrEmpty(token))
                 {
+                    var sessionKey = $"t{Guid.NewGuid()}";
+                    HttpContext.Response.Cookies.Append(sessionKey, token, new CookieOptions
+                    {
+                        Expires = DateTimeOffset.UtcNow.AddMinutes(30),
+                        HttpOnly = true, // Accessible only by the server
+                        IsEssential = true // Required for GDPR compliance
+                    });
+
                     return this.Challenge(
                         new AuthenticationProperties
                         {
-                            RedirectUri = "/?token=" + token,
+                            RedirectUri = $"/?session={sessionKey}",
                         }, OpenIdConnectDefaults.AuthenticationScheme);
                 }
                 else
@@ -518,7 +539,7 @@ public class HomeController : BaseController
             {
                 var userId = this.userService.AddUser(this.GetCurrentUserDetail());
                 var currentUserId = this.userService.GetUserIdFromEmailAddress(this.CurrentUserEmailAddress);
-                this.subscriptionService = new SubscriptionService(this.subscriptionRepository, this.planRepository, userId);
+                this.subscriptionService = new SubscriptionService(this.subscriptionRepository, this.planRepository, this.timeProvider, userId);
                 this.TempData["ShowWelcomeScreen"] = false;
 
                 subscriptionDetail = this.subscriptionService.GetSubscriptionsBySubscriptionId(subscriptionId);
@@ -607,7 +628,7 @@ public class HomeController : BaseController
                                             NewValue = SubscriptionStatusEnumExtension.PendingActivation.ToString(),
                                             OldValue = oldValue.SubscriptionStatus.ToString(),
                                             CreateBy = currentUserId,
-                                            CreateDate = DateTime.Now,
+                                            CreateDate = timeProvider.GetUtcNow(),
                                         };
                                         this.subscriptionLogRepository.Save(auditLog);
                                     }
@@ -640,7 +661,7 @@ public class HomeController : BaseController
                                 NewValue = SubscriptionStatusEnumExtension.PendingUnsubscribe.ToString(),
                                 OldValue = oldValue.SubscriptionStatus.ToString(),
                                 CreateBy = currentUserId,
-                                CreateDate = DateTime.Now,
+                                CreateDate = timeProvider.GetUtcNow(),
                             };
                             this.subscriptionLogRepository.Save(auditLog);
                         }
@@ -848,7 +869,7 @@ public class HomeController : BaseController
             {
                 var userId = this.userService.AddUser(this.GetCurrentUserDetail());
                 var currentUserId = this.userService.GetUserIdFromEmailAddress(this.CurrentUserEmailAddress);
-                this.subscriptionService = new SubscriptionService(this.subscriptionRepository, this.planRepository, userId);
+                this.subscriptionService = new SubscriptionService(this.subscriptionRepository, this.planRepository, this.timeProvider, userId);
                 var planDetails = this.planRepository.GetById(planId);
                 this.TempData["ShowWelcomeScreen"] = false;
                 subscriptionDetail = this.subscriptionService.GetPartnerSubscription(this.CurrentUserEmailAddress, subscriptionId).FirstOrDefault();

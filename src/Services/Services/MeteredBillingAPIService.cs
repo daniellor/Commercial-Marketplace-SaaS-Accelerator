@@ -61,7 +61,7 @@ public class MeteredBillingApiService : BaseApiService, IMeteredBillingApiServic
         var usage = new UsageEvent()
         {
             ResourceId = subscriptionUsageRequest.ResourceId,
-            PlanId = subscriptionUsageRequest.PlanId,
+            PlanId = subscriptionUsageRequest.PlanId.ToString(),
             Dimension = subscriptionUsageRequest.Dimension,
             Quantity = subscriptionUsageRequest.Quantity,
             EffectiveStartTime = subscriptionUsageRequest.EffectiveStartTime,
@@ -118,7 +118,7 @@ public class MeteredBillingApiService : BaseApiService, IMeteredBillingApiServic
             batchUsageEvent.Request.Add(new UsageEvent()
             {
                 ResourceId = usage.ResourceId,
-                PlanId = usage.PlanId,
+                PlanId = usage.PlanId?.ToString(),
                 Dimension = usage.Dimension,
                 Quantity = usage.Quantity,
                 EffectiveStartTime = usage.EffectiveStartTime,

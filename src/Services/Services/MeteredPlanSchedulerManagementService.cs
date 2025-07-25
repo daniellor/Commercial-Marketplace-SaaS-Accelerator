@@ -1,12 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text.Json;
+﻿using Marketplace.SaaS.Accelerator.DataAccess.Context;
 using Marketplace.SaaS.Accelerator.DataAccess.Contracts;
 using Marketplace.SaaS.Accelerator.DataAccess.Entities;
 using Marketplace.SaaS.Accelerator.Services.Contracts;
 using Marketplace.SaaS.Accelerator.Services.Helpers;
 using Marketplace.SaaS.Accelerator.Services.Models;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text.Json;
 namespace Marketplace.SaaS.Accelerator.Services.Services;
 
 /// <summary>
@@ -22,10 +23,6 @@ public class MeteredPlanSchedulerManagementService
     /// Metered Plan Scheduler Management Repository Interface
     /// </summary>
     private IMeteredPlanSchedulerManagementRepository schedulerRepository;
-    /// <summary>
-    /// Scheduler Manager View Repository Interface
-    /// </summary>
-    private ISchedulerManagerViewRepository schedulerViewRepository;
     /// <summary>
     /// Subscription UsageLogs Repository Interface
     /// </summary>
@@ -43,6 +40,7 @@ public class MeteredPlanSchedulerManagementService
     /// Application Config Repository
     /// </summary>
     private IApplicationConfigRepository applicationConfigRepository;
+    private readonly SaasKitContext context;
 
 
     /// <summary>
@@ -54,7 +52,6 @@ public class MeteredPlanSchedulerManagementService
 
     public MeteredPlanSchedulerManagementService(ISchedulerFrequencyRepository schedulerFrequencyRepository, 
             IMeteredPlanSchedulerManagementRepository meteredPlanSchedulerManagementRepository,
-            ISchedulerManagerViewRepository schedulerManagerViewRepository, 
             ISubscriptionUsageLogsRepository subscriptionUsageLogsRepository,
             IApplicationConfigRepository applicationConfigRepository,
             IEmailTemplateRepository emailTemplateRepository,
@@ -62,7 +59,6 @@ public class MeteredPlanSchedulerManagementService
     {
         this.frequencyRepository = schedulerFrequencyRepository;
         this.schedulerRepository = meteredPlanSchedulerManagementRepository;
-        this.schedulerViewRepository = schedulerManagerViewRepository;
         this.subscriptionUsageLogsRepository = subscriptionUsageLogsRepository;
         this.emailService = emailService;
         this.emailHelper = new EmailHelper(applicationConfigRepository, null, emailTemplateRepository, null, null);
@@ -71,15 +67,15 @@ public class MeteredPlanSchedulerManagementService
 
     public MeteredPlanSchedulerManagementService(ISchedulerFrequencyRepository schedulerFrequencyRepository,
         IMeteredPlanSchedulerManagementRepository meteredPlanSchedulerManagementRepository,
-        ISchedulerManagerViewRepository schedulerManagerViewRepository,
         ISubscriptionUsageLogsRepository subscriptionUsageLogsRepository,
-        IApplicationConfigRepository applicationConfigRepository)
+        IApplicationConfigRepository applicationConfigRepository,
+        SaasKitContext context)
     {
         this.frequencyRepository = schedulerFrequencyRepository;
         this.schedulerRepository = meteredPlanSchedulerManagementRepository;
-        this.schedulerViewRepository = schedulerManagerViewRepository;
         this.subscriptionUsageLogsRepository = subscriptionUsageLogsRepository;
         this.applicationConfigRepository = applicationConfigRepository;
+        this.context = context;
         this.applicationConfigRepository = applicationConfigRepository;
     }
 
@@ -129,34 +125,35 @@ public class MeteredPlanSchedulerManagementService
     /// Get All Scheduled Metered trigger list
     /// </summary>
     /// <returns>List of Scheduler Manager View</returns>
-    public List<SchedulerManagerViewModel> GetAllSchedulerManagerList()
+    public List<SchedulerManagerViewModel> GetAllSchedulerManagerList(int? id = null)
     {
-        List<SchedulerManagerViewModel> schedulerList = new List<SchedulerManagerViewModel>();
-        var allSchedulerViewData = this.schedulerViewRepository.GetAll().OrderBy(s => s.AMPSubscriptionId);
-        foreach (var item in allSchedulerViewData)
-        {
-            SchedulerManagerViewModel schedulerView = new SchedulerManagerViewModel();
-            schedulerView.Id = item.Id;
-            schedulerView.PlanId = item.PlanId;
-            schedulerView.PurchaserEmail = item.PurchaserEmail;
-            schedulerView.SchedulerName = item.SchedulerName;
-            schedulerView.SubscriptionName = item.SubscriptionName;
-            schedulerView.AMPSubscriptionId = item.AMPSubscriptionId;
-            schedulerView.Dimension = item.Dimension;
-            schedulerView.Frequency = item.Frequency;
-            schedulerView.Quantity = item.Quantity;
-            schedulerView.StartDate = item.StartDate;
-            schedulerView.NextRunTime = item.NextRunTime;
-                
-            schedulerList.Add(schedulerView);
-        }
-
-        foreach (var item in schedulerList)
+        var allSchedulerViewDataQuery = from m in this.context.MeteredPlanSchedulerManagement
+                                   join f in this.context.SchedulerFrequency on m.FrequencyId equals f.Id
+                                   join s in this.context.Subscriptions on m.SubscriptionId equals s.Id
+                                   join p in this.context.Plans on m.PlanId equals p.Id
+                                   join d in this.context.MeteredDimensions on m.DimensionId equals d.Id
+                                   where id == null || m.Id == id
+                                        select new SchedulerManagerViewModel()
+                                   {
+                                       Id = m.Id,
+                                       PlanId = m.PlanId,
+                                       PurchaserEmail = s.PurchaserEmail,
+                                       SchedulerName = m.SchedulerName,
+                                       SubscriptionName = s.Name,
+                                       AMPSubscriptionId = s.AmpsubscriptionId,
+                                       Dimension = d.Dimension,
+                                       Frequency = f.Frequency,
+                                       Quantity = m.Quantity,
+                                       StartDate = m.StartDate,
+                                       NextRunTime = m.NextRunTime
+                                   };
+        var result = allSchedulerViewDataQuery.ToList();
+        foreach (var item in result)
         {
             item.LastRunTime = this.GetSchedulerLastRunTime(item.Id,item.SchedulerName);
         }
 
-        return schedulerList;
+        return result;
     }
 
 
@@ -167,7 +164,7 @@ public class MeteredPlanSchedulerManagementService
     public IReadOnlyList<SchedulerManagerViewModel> GetScheduledTasks()
     {
          List<SchedulerManagerViewModel> schedulerList = new List<SchedulerManagerViewModel>();
-        var allSchedulerViewData = this.schedulerViewRepository.GetAll().OrderBy(s => s.StartDate);
+        var allSchedulerViewData = GetAllSchedulerManagerList().OrderBy(s => s.StartDate);
         foreach (var item in allSchedulerViewData)
         {
             if (!CheckIfSchedulerRun(item.Id, item.SchedulerName))
@@ -199,10 +196,10 @@ public class MeteredPlanSchedulerManagementService
     /// Get All Scheduled Metered trigger list
     /// </summary>
     /// <returns>List of Scheduler Manager View</returns>
-    public SchedulerManagerViewModel GetSchedulerManagerById(int Id)
+    public SchedulerManagerViewModel GetSchedulerManagerById(int id)
     {
 
-        var item = this.schedulerViewRepository.GetById(Id);
+        var item = this.GetAllSchedulerManagerList(id).Single();
         SchedulerManagerViewModel schedulerView = new SchedulerManagerViewModel();
         schedulerView.Id = item.Id;
         schedulerView.PlanId = item.PlanId;
@@ -252,7 +249,7 @@ public class MeteredPlanSchedulerManagementService
         List<MeteredAuditLogs> schedulerItemRunHistory = new List<MeteredAuditLogs>();
         var scheduledItem = this.schedulerRepository.Get(id);
         var meteredAudits = this.subscriptionUsageLogsRepository.GetMeteredAuditLogsBySubscriptionId(Convert.ToInt32(scheduledItem.SubscriptionId));
-        var scheduledItemView = this.schedulerViewRepository.GetById(id);
+        var scheduledItemView = this.GetAllSchedulerManagerList(id).Single();
         foreach (var auditLog in meteredAudits)
         {
             var MeteringUsageRequest = JsonSerializer.Deserialize<MeteringUsageRequest>(auditLog.RequestJson);
@@ -268,12 +265,12 @@ public class MeteredPlanSchedulerManagementService
     }
 
 
-    public DateTime? GetSchedulerLastRunTime(int id,string schedulerName)
+    public DateTimeOffset? GetSchedulerLastRunTime(int id,string schedulerName)
     {
-        DateTime? lastRunTime = null;
+        DateTimeOffset? lastRunTime = null;
         var scheduledItem = this.schedulerRepository.Get(id);
         var meteredAudits = this.subscriptionUsageLogsRepository.GetMeteredAuditLogsBySubscriptionId(Convert.ToInt32(scheduledItem.SubscriptionId));
-        var scheduledItemView = this.schedulerViewRepository.GetById(id);
+        var scheduledItemView = this.GetAllSchedulerManagerList(id).Single();
         foreach (var auditLog in meteredAudits)
         {
             var MeteringUsageRequest = JsonSerializer.Deserialize<MeteringUsageRequest>(auditLog.RequestJson);
@@ -295,7 +292,7 @@ public class MeteredPlanSchedulerManagementService
     {
         var scheduledItem = this.schedulerRepository.Get(id);
         var meteredAudits = this.subscriptionUsageLogsRepository.GetMeteredAuditLogsBySubscriptionId(Convert.ToInt32(scheduledItem.SubscriptionId));
-        var scheduledItemView = this.schedulerViewRepository.GetById(id);
+        var scheduledItemView = this.GetAllSchedulerManagerList(id).Single();
         if (scheduledItemView.Frequency == SchedulerFrequencyEnum.OneTime.ToString())
         {
             foreach (var auditLog in meteredAudits)

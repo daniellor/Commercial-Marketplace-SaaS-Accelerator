@@ -18,9 +18,9 @@ public partial class Subscriptions
     public string AmpplanId { get; set; }
     public string AmpOfferId { get; set; }
     public bool? IsActive { get; set; }
-    public int? CreateBy { get; set; }
-    public DateTime? CreateDate { get; set; }
-    public DateTime? ModifyDate { get; set; }
+    public int CreateBy { get; set; }
+    public DateTimeOffset CreateDate { get; set; }
+    public DateTimeOffset? ModifyDate { get; set; }
     public int? UserId { get; set; }
     public string Name { get; set; }
     public int Ampquantity { get; set; }
@@ -28,8 +28,8 @@ public partial class Subscriptions
     public Guid? PurchaserTenantId { get; set; }
 
     public string Term { get; set; }
-    public DateTime? StartDate { get; set; }
-    public DateTime? EndDate { get; set; }
+    public DateTimeOffset? StartDate { get; set; }
+    public DateTimeOffset? EndDate { get; set; }
 
 
     public virtual Users User { get; set; }

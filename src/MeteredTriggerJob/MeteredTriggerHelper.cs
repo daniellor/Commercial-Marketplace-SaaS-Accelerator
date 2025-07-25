@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
 using Marketplace.SaaS.Accelerator.DataAccess.Contracts;
@@ -8,7 +7,6 @@ using Marketplace.SaaS.Accelerator.Services.Contracts;
 using Marketplace.SaaS.Accelerator.Services.Exceptions;
 using Marketplace.SaaS.Accelerator.Services.Models;
 using Marketplace.SaaS.Accelerator.Services.Services;
-using Microsoft.AspNetCore.Mvc;
 
 namespace Marketplace.SaaS.Accelerator.MeteredTriggerJob;
 
@@ -22,10 +20,6 @@ public class Executor
     /// Scheduler Repository Interface
     /// </summary>
     private IMeteredPlanSchedulerManagementRepository schedulerRepository;
-    /// <summary>
-    /// Scheduler View Repository Interface
-    /// </summary>
-    private readonly ISchedulerManagerViewRepository schedulerViewRepository;
     /// <summary>
     /// Subscription Usage Logs Repository Interface
     /// </summary>
@@ -42,6 +36,8 @@ public class Executor
     /// Email Template Repository Interface
     /// </summary>
     private readonly IEmailTemplateRepository emailTemplateRepository;
+    private readonly TimeProvider timeProvider;
+
     /// <summary>
     /// Email Service Interface
     /// </summary>
@@ -75,33 +71,32 @@ public class Executor
     /// <param name="emailTemplateRepository"></param>
     public Executor(ISchedulerFrequencyRepository frequencyRepository,
         IMeteredPlanSchedulerManagementRepository schedulerRepository,
-        ISchedulerManagerViewRepository schedulerViewRepository, 
         ISubscriptionUsageLogsRepository subscriptionUsageLogsRepository,
         IMeteredBillingApiService billingApiService,
         IApplicationConfigRepository applicationConfigRepository,
         IEmailService emailService,
         IEmailTemplateRepository emailTemplateRepository, 
         IApplicationLogRepository applicationLogRepository,
+        TimeProvider timeProvider,
         IAppVersionService appVersionService)
     {
         this.frequencyRepository = frequencyRepository;
         this.schedulerRepository = schedulerRepository;
-        this.schedulerViewRepository = schedulerViewRepository;
         this.subscriptionUsageLogsRepository = subscriptionUsageLogsRepository;
         this.billingApiService = billingApiService;
         this.applicationConfigRepository = applicationConfigRepository;
         this.emailTemplateRepository = emailTemplateRepository;
+        this.timeProvider = timeProvider;
         this.emailService = emailService;
         schedulerService = new MeteredPlanSchedulerManagementService(this.frequencyRepository, 
                                this.schedulerRepository, 
-                               this.schedulerViewRepository, 
                                this.subscriptionUsageLogsRepository,
                                this.applicationConfigRepository,
                                this.emailTemplateRepository,
                                this.emailService);
         this.billingApiService = billingApiService;
         this.appVersionService = appVersionService;        
-        this.applicationLogService = new ApplicationLogService(applicationLogRepository);
+        this.applicationLogService = new ApplicationLogService(applicationLogRepository, timeProvider);
         this.applicationConfigService = new ApplicationConfigService(applicationConfigRepository);
 
     }
@@ -121,7 +116,7 @@ public class Executor
 
 
             //GetCurrentUTC time
-            DateTime _currentUTCTime = DateTime.UtcNow;
+            var _currentUTCTime = DateTime.UtcNow;
             TimeSpan ts = new TimeSpan(DateTime.UtcNow.Hour, 0, 0);
             _currentUTCTime = _currentUTCTime.Date + ts;
 
@@ -145,8 +140,8 @@ public class Executor
                     {
                         // Get the run time.
                         //Always pickup the NextRuntime, durnig firstRun or OneTime then pickup StartDate, as the NextRunTime will be null
-                        DateTime? _nextRunTime = scheduledItem.NextRunTime ?? scheduledItem.StartDate;
-                        int timeDifferentInHours = (int)_currentUTCTime.Subtract(_nextRunTime.Value).TotalHours;
+                        DateTimeOffset? _nextRunTime = scheduledItem.NextRunTime ?? scheduledItem.StartDate;
+                        int timeDifferentInHours = (int)_currentUTCTime.Subtract(_nextRunTime.Value.DateTime).TotalHours;
 
                         // Print the scheduled Item and the expected run date
                         PrintScheduler(scheduledItem,
@@ -215,7 +210,7 @@ public class Executor
                 Dimension = item.Dimension,
                 EffectiveStartTime = DateTime.UtcNow,
                 PlanId = item.PlanId,
-                Quantity = item.Quantity,
+                Quantity = item.Quantity.Value,
                 ResourceId = item.AMPSubscriptionId,
             };
             var meteringUsageResult = new MeteringUsageResult();
@@ -263,9 +258,9 @@ public class Executor
                 StatusCode = status,
                 RunBy = $"Scheduler - {scheduler.SchedulerName}",
                 SubscriptionId = scheduler.SubscriptionId,
-                SubscriptionUsageDate = DateTime.UtcNow,
+                SubscriptionUsageDate = timeProvider.GetUtcNow(),
                 CreatedBy = 0,
-                CreatedDate = DateTime.Now,
+                CreatedDate = timeProvider.GetUtcNow(),
             };
             subscriptionUsageLogsRepository.Save(newMeteredAuditLog);
 
@@ -312,7 +307,7 @@ public class Executor
     /// <param name="nextRun">next run time</param>
     /// <param name="timeDifferenceInHours">difference time</param>
     private void PrintScheduler(SchedulerManagerViewModel item, 
-        DateTime? nextRun, 
+        DateTimeOffset? nextRun, 
         int timeDifferenceInHours)
     {
         LogLine($"Scheduled Item Id: {item.Id} " + Environment.NewLine+
@@ -330,7 +325,7 @@ public class Executor
     /// <param name="startDate">Start task Date</param>
     /// <param name="frequency">Task frequency</param>
     /// <returns></returns>
-    private DateTime? GetNextRunTime(DateTime? startDate, SchedulerFrequencyEnum frequency)
+    private DateTimeOffset? GetNextRunTime(DateTimeOffset? startDate, SchedulerFrequencyEnum frequency)
     {
         switch (frequency)
         {

@@ -111,7 +111,7 @@ public class OfferAttributesModel
     /// <value>
     ///   <c>true</c> if isactive; otherwise, <c>false</c>.
     /// </value>
-    public bool Isactive { get; set; }
+    public bool IsActive { get; set; }
 
     /// <summary>
     /// Gets or sets a value indicating whether this instance is remove.
@@ -135,7 +135,7 @@ public class OfferAttributesModel
     /// <value>
     /// The create date.
     /// </value>
-    public DateTime CreateDate { get; set; }
+    public DateTimeOffset CreateDate { get; set; }
 
     /// <summary>
     /// Gets or sets a value indicating whether this instance is delete.

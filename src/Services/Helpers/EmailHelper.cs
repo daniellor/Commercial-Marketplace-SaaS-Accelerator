@@ -1,7 +1,8 @@
-﻿using System;
-using Marketplace.SaaS.Accelerator.DataAccess.Contracts;
+﻿using Marketplace.SaaS.Accelerator.DataAccess.Contracts;
 using Marketplace.SaaS.Accelerator.Services.Exceptions;
 using Marketplace.SaaS.Accelerator.Services.Models;
+using Microsoft.Identity.Client;
+using System;
 
 namespace Marketplace.SaaS.Accelerator.Services.Helpers;
 
@@ -54,7 +55,11 @@ public class EmailHelper
     /// Error while sending an email, please check the configuration.</exception>
     public EmailContentModel PrepareEmailContent(Guid subscriptionID, Guid planGuId, string processStatus, string planEventName, string subscriptionStatus)
     {
-        string body = this.emailTemplateRepository.GetEmailBodyForSubscription(subscriptionID, processStatus);
+        var subscriptionInfo = this.emailTemplateRepository.GetSubscriptionInfo(subscriptionID);
+        string subscriptionBody = this.emailTemplateRepository.GetEmailBodyForSubscription(subscriptionInfo);
+        string body = string.Empty;
+        var welcomeText = this.emailTemplateRepository.WelcomeText(subscriptionInfo, processStatus);
+        var appName = this.applicationConfigRepository.GetValueByName("ApplicationName");
         var subscriptionEvent = this.eventsRepository.GetByName(planEventName);
         var emailTemplateData = this.emailTemplateRepository.GetTemplateForStatus(subscriptionStatus);
         if (processStatus == "failure")
@@ -73,6 +78,10 @@ public class EmailHelper
         //First add To, Cc, Bcc email addresses from email template
         if (emailTemplateData != null)
         {
+            body = emailTemplateData.TemplateBody
+                    .Replace("${subscriptiondetails}", subscriptionBody)
+                    .Replace("${ApplicationName}", appName)
+                    .Replace("${welcometext}", welcomeText);
             if (!string.IsNullOrEmpty(emailTemplateData.ToRecipients))
             {
                 toReceipents = emailTemplateData.ToRecipients;

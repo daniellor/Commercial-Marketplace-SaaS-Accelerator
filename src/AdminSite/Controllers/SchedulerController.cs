@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text.Json;
-using System.Web;
+﻿using Marketplace.SaaS.Accelerator.DataAccess.Context;
 using Marketplace.SaaS.Accelerator.DataAccess.Contracts;
 using Marketplace.SaaS.Accelerator.DataAccess.Entities;
 using Marketplace.SaaS.Accelerator.DataAccess.Services;
@@ -12,6 +8,11 @@ using Marketplace.SaaS.Accelerator.Services.Utilities;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Logging;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text.Json;
+using System.Web;
 
 namespace Marketplace.SaaS.Accelerator.AdminSite.Controllers;
 
@@ -80,26 +81,27 @@ public class SchedulerController : BaseController
         ISchedulerFrequencyRepository frequencyRepository,
         IPlansRepository plansRepository,
         IMeteredPlanSchedulerManagementRepository schedulerRepository,
-        ISchedulerManagerViewRepository schedulerViewRepository, 
         IUsersRepository usersRepository,
         SaaSClientLogger<SchedulerController> logger,
         IAppVersionService appVersionService,
         ISubscriptionUsageLogsRepository subscriptionUsageLogsRepository,
         IApplicationConfigRepository applicationConfigRepository,
         IOfferAttributesRepository offerAttributeRepository,
-        IOffersRepository offerRepository
+        IOffersRepository offerRepository, 
+        TimeProvider timeProvider,
+        SaasKitContext context
         ) :base(applicationConfigRepository, appVersionService)
 
     {
         this.usersRepository = usersRepository;
         this.logger = logger;
         this.meteredRepository = meteredRepository;
-        this.schedulerService = new MeteredPlanSchedulerManagementService(frequencyRepository, schedulerRepository, schedulerViewRepository,subscriptionUsageLogsRepository,applicationConfigRepository);
-        this.subscriptionService = new SubscriptionService(subscriptionRepository,plansRepository);
+        this.schedulerService = new MeteredPlanSchedulerManagementService(frequencyRepository, schedulerRepository, subscriptionUsageLogsRepository, applicationConfigRepository, context);
+        this.subscriptionService = new SubscriptionService(subscriptionRepository,plansRepository, timeProvider);
         this.plansRepository = plansRepository;
         this.offerAttributeRepository = offerAttributeRepository;
         this.offerRepository = offerRepository;
-        this.plansService = new PlanService(this.plansRepository, this.offerAttributeRepository, this.offerRepository);
+        this.plansService = new PlanService(this.plansRepository, this.offerAttributeRepository, this.offerRepository, timeProvider);
 
     }
 
@@ -325,7 +327,7 @@ public class SchedulerController : BaseController
             schedulerUsageViewModel.SelectedDimension = SchedulerItem.Dimension;
             schedulerUsageViewModel.SelectedSchedulerFrequency = SchedulerItem.Frequency;
             schedulerUsageViewModel.Quantity = Convert.ToInt32(SchedulerItem.Quantity);
-            schedulerUsageViewModel.FirstRunDate = SchedulerItem.StartDate;
+            schedulerUsageViewModel.FirstRunDate = SchedulerItem.StartDate.Value;
             if (SchedulerItem.NextRunTime.HasValue)
             {
                 schedulerUsageViewModel.NextRunDate = SchedulerItem.NextRunTime.Value;

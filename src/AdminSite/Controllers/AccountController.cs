@@ -20,7 +20,7 @@ public class AccountController : Controller
     /// </returns>
     public IActionResult SignIn(string returnUrl)
     {
-        return this.Challenge(new AuthenticationProperties { RedirectUri = "/" }, OpenIdConnectDefaults.AuthenticationScheme);
+        return this.Challenge(new AuthenticationProperties { RedirectUri = returnUrl ?? "/" }, OpenIdConnectDefaults.AuthenticationScheme);
     }
 
     /// <summary>

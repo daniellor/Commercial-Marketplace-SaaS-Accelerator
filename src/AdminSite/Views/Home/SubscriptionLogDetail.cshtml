@@ -30,8 +30,7 @@
                     {
                         <tr>
                             <td class="text-left">
-                                @if (log.CreateDate != null && log.CreateDate.HasValue)
-                                {@log.CreateDate.Value.ToString("MM/dd/yyyy hh:mm tt")}
+                                {@log.CreateDate.ToString("MM/dd/yyyy hh:mm tt")}
                             </td>
                             <td class="text-left">@log.Subscription.Name</td>
                             <td class="text-left">@log.Attribute</td>

@@ -64,13 +64,13 @@ public class SchedulerUsageViewModel
     /// <summary>
     /// Get or set First Run Time
     /// </summary>
-    public DateTime FirstRunDate { get; set; }
+    public DateTimeOffset FirstRunDate { get; set; }
 
 
     /// <summary>
     /// Get or set Next Run Time
     /// </summary>
-    public DateTime? NextRunDate { get; set; }
+    public DateTimeOffset? NextRunDate { get; set; }
 
     /// <summary>
     /// Gets or sets the metered audit logs.

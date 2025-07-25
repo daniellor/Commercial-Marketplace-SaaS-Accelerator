@@ -1,6 +1,33 @@
-using Microsoft.AspNetCore.Hosting;
+using Azure.Identity;
+using Marketplace.SaaS.Accelerator.CustomerSite.Controllers;
+using Marketplace.SaaS.Accelerator.CustomerSite.WebHook;
+using Marketplace.SaaS.Accelerator.DataAccess.Contracts;
+using Marketplace.SaaS.Accelerator.DataAccess.Services;
+using Marketplace.SaaS.Accelerator.Services.Configurations;
+using Marketplace.SaaS.Accelerator.Services.Contracts;
+using Marketplace.SaaS.Accelerator.Services.Services;
+using Marketplace.SaaS.Accelerator.Services.Utilities;
+using Marketplace.SaaS.Accelerator.Services.WebHook;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.CookiePolicy;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.IdentityModel.Protocols.OpenIdConnect;
+using Microsoft.Marketplace.SaaS;
+using Serilog;
+using System;
+using System.Net;
+using System.Reflection;
+using System.Threading.Tasks;
+using Web.Infrastructure;
+using Web.Infrastructure.Util;
 
 namespace Marketplace.SaaS.Accelerator.CustomerSite;
 
@@ -15,34 +42,167 @@ public class Program
     /// <param name="args">The arguments.</param>
     public static void Main(string[] args)
     {
-        CreateHostBuilder(args).Build().Run();
+        var builder = WebApplication.CreateBuilder(args);
         var loggerFactory = LoggerFactory.Create(builder =>
         {
             builder
                 .AddDebug()
                 .AddConsole();
         });
+        builder.Host.UseSerilog((hostingContext, loggerConfiguration) =>
+                           loggerConfiguration.ReadFrom.Configuration(hostingContext.Configuration));
+        builder.Services.AddHttpLogging(_ => { });
+        builder.Services.Configure<CookiePolicyOptions>(options =>
+        {
+            // This lambda determines whether user consent for non-essential cookies is needed for a given request.
+            options.CheckConsentNeeded = context => true;
+            options.MinimumSameSitePolicy = SameSiteMode.None;
+        });
 
-        ILogger logger = loggerFactory.CreateLogger<Program>();
-        logger.LogInformation("Service Provisioning initialized!!");
+        var config = new SaaSApiClientConfiguration()
+        {
+            AdAuthenticationEndPoint = builder.Configuration["SaaSApiConfiguration:AdAuthenticationEndPoint"],
+            ClientId = builder.Configuration["SaaSApiConfiguration:ClientId"],
+            ClientSecret = builder.Configuration["SaaSApiConfiguration:ClientSecret"],
+            MTClientId = builder.Configuration["SaaSApiConfiguration:MTClientId"],
+            FulFillmentAPIBaseURL = builder.Configuration["SaaSApiConfiguration:FulFillmentAPIBaseURL"],
+            FulFillmentAPIVersion = builder.Configuration["SaaSApiConfiguration:FulFillmentAPIVersion"],
+            GrantType = builder.Configuration["SaaSApiConfiguration:GrantType"],
+            Resource = builder.Configuration["SaaSApiConfiguration:Resource"],
+            SaaSAppUrl = builder.Configuration["SaaSApiConfiguration:SaaSAppUrl"],
+            SignedOutRedirectUri = builder.Configuration["SaaSApiConfiguration:SignedOutRedirectUri"],
+            TenantId = builder.Configuration["SaaSApiConfiguration:TenantId"],
+            Environment = builder.Configuration["SaaSApiConfiguration:Environment"],
+        };
+        var creds = new ClientSecretCredential(config.TenantId.ToString(), config.ClientId.ToString(), config.ClientSecret);
+
+        builder.Services
+            .AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = OpenIdConnectDefaults.AuthenticationScheme;
+                options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+            })
+            .AddCookie(options =>
+            {
+                options.ExpireTimeSpan = TimeSpan.FromMinutes(60);
+                options.Cookie.MaxAge = options.ExpireTimeSpan;
+                options.SlidingExpiration = true;
+                options.Cookie.Name = "SaasKit.CustomerSite";// change name to hide .net identifiers in name
+                options.Cookie.HttpOnly = true;// make so client cannot alter cookie
+                options.Cookie.SecurePolicy = CookieSecurePolicy.Always;// require https
+                options.Cookie.SameSite = SameSiteMode.Lax;// from external resource
+                                                              // verify options are valid or throw exception 
+                options.Validate();
+            })
+            .AddOpenIdConnect(options =>
+            {
+                options.Authority = $"{config.AdAuthenticationEndPoint}/common/v2.0";
+                options.ClientId = config.MTClientId;
+                options.ResponseType = OpenIdConnectResponseType.IdToken;
+                options.CallbackPath = "/Home/Index";
+                options.SignedOutRedirectUri = config.SignedOutRedirectUri;
+                options.TokenValidationParameters.NameClaimType = ClaimConstants.CLAIM_SHORT_NAME;
+                options.TokenValidationParameters.ValidateIssuer = false;
+            });
+        
+        builder.Services
+            .AddTransient<IClaimsTransformation, CustomClaimsTransformation>()
+            .AddScoped<ExceptionHandlerAttribute>()
+            .AddScoped<RequestLoggerActionFilter>();
+
+        if (!Uri.TryCreate(config.FulFillmentAPIBaseURL, UriKind.Absolute, out var fulfillmentBaseApi))
+        {
+            fulfillmentBaseApi = new Uri("https://marketplaceapi.microsoft.com/api");
+        }
+
+        builder.Services
+            .AddSingleton<IFulfillmentApiService>(new FulfillmentApiService(new MarketplaceSaaSClient(fulfillmentBaseApi, creds), config, new FulfillmentApiClientLogger()))
+            .AddSingleton<SaaSApiClientConfiguration>(config)
+            .AddSingleton<ValidateJwtToken>();
+
+        // Add the assembly version
+        builder.Services.AddSingleton<IAppVersionService>(new AppVersionService(Assembly.GetExecutingAssembly()?.GetName()?.Version, Assembly.GetEntryAssembly().GetAssemblyLinkTime()));
+
+        builder.Services.AddWebServices(builder.Configuration);
+
+        InitializeRepositoryServices(builder.Services);
+
+        builder.Services.AddMvc(option => {
+            option.EnableEndpointRouting = false;
+            option.Filters.Add(new AutoValidateAntiforgeryTokenAttribute());
+        });
+
+
+        // Known proxies and networks are used to determine if the request is coming from a trusted source.
+        if (!string.IsNullOrEmpty(builder.Configuration["KnownProxies"]))
+        {
+            builder.Services.Configure<ForwardedHeadersOptions>(options =>
+            {
+                options.ForwardedHeaders =
+                    ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto | ForwardedHeaders.XForwardedHost | ForwardedHeaders.XForwardedPrefix;
+
+                var knownProxies = builder.Configuration["KnownProxies"]?.Split(',');
+                foreach (var knownProxy in knownProxies)
+                {
+                    options.KnownProxies.Add(IPAddress.Parse(knownProxy));
+                }
+            });
+        }
+
+        var app = builder.Build();
+        
+        if (!string.IsNullOrEmpty(builder.Configuration["KnownProxies"]))
+        {
+            app.UseForwardedHeaders();
+        }
+
+        if (app.Environment.IsDevelopment())
+        {
+            app.UseDeveloperExceptionPage();
+        }
+        else
+        {
+            app.UseExceptionHandler("/Home/Error");
+            app.UseHsts();
+        }
+
+        app.UseHttpsRedirection();
+        app.UseStaticFiles();
+        app.UseCookiePolicy(new CookiePolicyOptions
+        {
+            HttpOnly = HttpOnlyPolicy.Always,
+            MinimumSameSitePolicy = SameSiteMode.None,
+            Secure = CookieSecurePolicy.Always
+        });
+        app.UseAuthentication();
+        app.UseHttpLogging();
+        app.UseMvc(routes =>
+        {
+            routes.MapRoute(
+                name: "default",
+                template: "{controller=Home}/{action=Index}/{id?}");
+        });
+        app.Run();
     }
 
-    /// <summary>
-    /// Creates the host builder.
-    /// </summary>
-    /// <param name="args">The arguments.</param>
-    /// <returns> Host Builder.</returns>
-    public static IHostBuilder CreateHostBuilder(string[] args) =>
-        Host.CreateDefaultBuilder(args)
-            .ConfigureLogging(logging =>
-            {
-                logging.ClearProviders();
-                logging.AddConsole();
-                logging.AddDebug();
-            })
-            .ConfigureWebHostDefaults(webBuilder =>
-            {
-                webBuilder.UseUrls("https://*:5001", "http://*:5000");
-                webBuilder.UseStartup<Startup>();
-            });
+    private static void InitializeRepositoryServices(IServiceCollection services)
+    {
+        services.AddScoped<ISubscriptionsRepository, SubscriptionsRepository>();
+        services.AddScoped<IPlansRepository, PlansRepository>();
+        services.AddScoped<IUsersRepository, UsersRepository>();
+        services.AddScoped<ISubscriptionLogRepository, SubscriptionLogRepository>();
+        services.AddScoped<IApplicationLogRepository, ApplicationLogRepository>();
+        services.AddScoped<IWebhookProcessor, WebhookProcessor>();
+        services.AddScoped<IWebhookHandler, WebHookHandler>();
+        services.AddScoped<IApplicationConfigRepository, ApplicationConfigRepository>();
+        services.AddScoped<IEmailTemplateRepository, EmailTemplateRepository>();
+        services.AddScoped<IOffersRepository, OffersRepository>();
+        services.AddScoped<IOfferAttributesRepository, OfferAttributesRepository>();
+        services.AddScoped<IPlanEventsMappingRepository, PlanEventsMappingRepository>();
+        services.AddScoped<IEventsRepository, EventsRepository>();
+        services.AddScoped<IEmailService, SMTPEmailService>();
+        services.AddScoped<SaaSClientLogger<HomeController>>();
+        services.AddScoped<IWebNotificationService, WebNotificationService>();
+    }
 }

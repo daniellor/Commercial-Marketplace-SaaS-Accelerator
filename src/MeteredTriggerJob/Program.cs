@@ -25,7 +25,7 @@ class Program
     static void Main (string[] args)
     {
 
-        Console.WriteLine($"MeteredExecutor Webjob Started at: {DateTime.Now}");
+        Console.WriteLine($"MeteredExecutor Webjob Started at: {DateTime.UtcNow}");
 
         IConfiguration configuration = new ConfigurationBuilder()
             .AddEnvironmentVariables()
@@ -42,13 +42,12 @@ class Program
         };
 
         var creds = new ClientSecretCredential(config.TenantId.ToString(), config.ClientId.ToString(), config.ClientSecret);
-        var versionInfo = new AppVersionService(Assembly.GetExecutingAssembly()?.GetName()?.Version);
+        var versionInfo = new AppVersionService(Assembly.GetExecutingAssembly()?.GetName()?.Version, null);
 
         var services = new ServiceCollection()
             .AddDbContext<SaasKitContext>(options => options.UseSqlServer(configuration.GetConnectionString("DefaultConnection")), ServiceLifetime.Transient)
             .AddScoped<ISchedulerFrequencyRepository, SchedulerFrequencyRepository>()
             .AddScoped<IMeteredPlanSchedulerManagementRepository, MeteredPlanSchedulerManagementRepository>()
-            .AddScoped<ISchedulerManagerViewRepository, SchedulerManagerViewRepository>()
             .AddScoped<ISubscriptionUsageLogsRepository, SubscriptionUsageLogsRepository>()
             .AddScoped<IApplicationLogRepository, ApplicationLogRepository>()
             .AddScoped<IEmailService, SMTPEmailService>()
@@ -62,7 +61,7 @@ class Program
         services
             .GetService<Executor>()
             .Execute();
-        Console.WriteLine($"MeteredExecutor Webjob Ended at: {DateTime.Now}");
+        Console.WriteLine($"MeteredExecutor Webjob Ended at: {DateTime.UtcNow}");
 
     }
 }

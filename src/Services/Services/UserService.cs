@@ -8,21 +8,8 @@ namespace Marketplace.SaaS.Accelerator.Services.Services;
 /// <summary>
 /// Users Service.
 /// </summary>
-public class UserService
+public class UserService(IUsersRepository userRepository, TimeProvider timeProvider)
 {
-    /// <summary>
-    /// The user repository.
-    /// </summary>
-    private IUsersRepository userRepository;
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="UserService" /> class.
-    /// </summary>
-    /// <param name="userRepository">The user repository.</param>
-    public UserService(IUsersRepository userRepository)
-    {
-        this.userRepository = userRepository;
-    }
 
     /// <summary>
     /// Adds the partner detail.
@@ -38,9 +25,9 @@ public class UserService
                 UserId = partnerDetailViewModel.UserId,
                 EmailAddress = partnerDetailViewModel.EmailAddress,
                 FullName = partnerDetailViewModel.FullName,
-                CreatedDate = DateTime.Now,
+                CreatedDate = timeProvider.GetUtcNow(),
             };
-            return this.userRepository.Save(newPartnerDetail);
+            return userRepository.Save(newPartnerDetail);
         }
 
         return 0;
@@ -55,7 +42,7 @@ public class UserService
     {
         if (!string.IsNullOrEmpty(partnerEmail))
         {
-            return this.userRepository.GetPartnerDetailFromEmail(partnerEmail).UserId;
+            return userRepository.GetPartnerDetailFromEmail(partnerEmail).UserId;
         }
 
         return 0;

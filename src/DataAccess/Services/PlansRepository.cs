@@ -24,6 +24,7 @@ public class PlansRepository : IPlansRepository
     /// The application configuration repository.
     /// </summary>
     private readonly IApplicationConfigRepository applicationConfigRepository;
+    private readonly TimeProvider timeProvider;
 
     /// <summary>
     /// The disposed.
@@ -35,10 +36,11 @@ public class PlansRepository : IPlansRepository
     /// </summary>
     /// <param name="context">The this.context.</param>
     /// <param name="applicationConfigRepository">The application configuration repository.</param>
-    public PlansRepository(SaasKitContext context, IApplicationConfigRepository applicationConfigRepository)
+    public PlansRepository(SaasKitContext context, IApplicationConfigRepository applicationConfigRepository, TimeProvider timeProvider)
     {
         this.context = context;
         this.applicationConfigRepository = applicationConfigRepository;
+        this.timeProvider = timeProvider;
     }
 
     /// <summary>
@@ -257,7 +259,7 @@ public class PlansRepository : IPlansRepository
                 PlanEventsModel planEvent = new PlanEventsModel();
                 planEvent.Id = events.Id;
                 planEvent.PlanId = events.PlanId;
-                planEvent.Isactive = events.Isactive;
+                planEvent.IsActive = events.IsActive;
                 planEvent.SuccessStateEmails = events.SuccessStateEmails;
                 planEvent.FailureStateEmails = events.FailureStateEmails;
                 planEvent.EventsName = events.EventsName;
@@ -295,7 +297,7 @@ public class PlansRepository : IPlansRepository
                 existingPlanAttribute.PlanId = planAttributes.PlanId;
                 existingPlanAttribute.UserId = planAttributes.UserId;
                 existingPlanAttribute.PlanAttributeId = planAttributes.PlanAttributeId;
-                existingPlanAttribute.CreateDate = DateTime.Now;
+                existingPlanAttribute.CreateDate = timeProvider.GetUtcNow();
 
                 this.context.PlanAttributeMapping.Update(existingPlanAttribute);
                 this.context.SaveChanges();
@@ -326,13 +328,13 @@ public class PlansRepository : IPlansRepository
             if (existingPlanEvents != null)
             {
                 existingPlanEvents.Id = planEvents.Id;
-                existingPlanEvents.Isactive = planEvents.Isactive;
+                existingPlanEvents.IsActive = planEvents.IsActive;
                 existingPlanEvents.PlanId = planEvents.PlanId;
                 existingPlanEvents.SuccessStateEmails = planEvents.SuccessStateEmails;
                 existingPlanEvents.FailureStateEmails = planEvents.FailureStateEmails;
                 existingPlanEvents.EventId = planEvents.EventId;
                 existingPlanEvents.UserId = planEvents.UserId;
-                existingPlanEvents.CreateDate = DateTime.Now;
+                existingPlanEvents.CreateDate = timeProvider.GetUtcNow();
                 existingPlanEvents.CopyToCustomer = planEvents.CopyToCustomer;
                 this.context.PlanEventsMapping.Update(existingPlanEvents);
                 this.context.SaveChanges();

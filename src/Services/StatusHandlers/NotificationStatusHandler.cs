@@ -63,6 +63,7 @@ public class NotificationStatusHandler : AbstractSubscriptionStatusHandler
     /// The email service.
     /// </summary>
     private readonly IEmailService emailService;
+    private readonly TimeProvider timeProvider;
 
     /// <summary>
     /// The email helper.
@@ -108,6 +109,7 @@ public class NotificationStatusHandler : AbstractSubscriptionStatusHandler
         IUsersRepository usersRepository,
         IOffersRepository offersRepository,
         IEmailService emailService,
+        TimeProvider timeProvider,
         ILogger<NotificationStatusHandler> logger)
         : base(subscriptionRepository, planRepository, usersRepository)
     {
@@ -119,9 +121,11 @@ public class NotificationStatusHandler : AbstractSubscriptionStatusHandler
         this.emailTemplateRepository = emailTemplateRepository;
         this.subscriptionRepository = subscriptionRepository;
         this.planRepository = planRepository;
-        this.subscriptionService = new SubscriptionService(this.subscriptionRepository, this.planRepository);
+        this.timeProvider = timeProvider;
+        this.subscriptionService = new SubscriptionService(this.subscriptionRepository,  this.planRepository, this.timeProvider);
         this.offersRepository = offersRepository;
         this.emailService = emailService;
+        
         this.emailHelper = new EmailHelper(applicationConfigRepository, subscriptionRepository, emailTemplateRepository, planEventsMappingRepository, eventsRepository);
         this.logger = logger;
     }

@@ -45,7 +45,7 @@ public class PlanEventsModel
     /// <value>
     ///   <c>true</c> if isactive; otherwise, <c>false</c>.
     /// </value>
-    public bool Isactive { get; set; }
+    public bool IsActive { get; set; }
 
     /// <summary>
     /// Gets or sets the success state emails.
