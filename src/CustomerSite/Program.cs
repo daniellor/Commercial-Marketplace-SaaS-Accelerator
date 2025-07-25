@@ -72,7 +72,8 @@ public class Program
             SaaSAppUrl = builder.Configuration["SaaSApiConfiguration:SaaSAppUrl"],
             SignedOutRedirectUri = builder.Configuration["SaaSApiConfiguration:SignedOutRedirectUri"],
             TenantId = builder.Configuration["SaaSApiConfiguration:TenantId"],
-            Environment = builder.Configuration["SaaSApiConfiguration:Environment"]
+            Environment = builder.Configuration["SaaSApiConfiguration:Environment"],
+            KnownProxies = builder.Configuration["KnownProxies"],
         };
         var creds = new ClientSecretCredential(config.TenantId.ToString(), config.ClientId.ToString(), config.ClientSecret);
 
@@ -136,6 +137,16 @@ public class Program
         {
             options.ForwardedHeaders =
                 ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto | ForwardedHeaders.XForwardedHost | ForwardedHeaders.XForwardedPrefix;
+
+            // Known proxies and networks are used to determine if the request is coming from a trusted source.
+            if (string.IsNullOrEmpty(config.KnownProxies))
+            {
+                var knownProxies = config.KnownProxies?.Split(',');
+                foreach (var knownProxy in knownProxies)
+                {
+                    options.KnownProxies.Add(IPAddress.Parse(knownProxy));
+                }
+            }
         });
         var app = builder.Build();
         app.UseForwardedHeaders();

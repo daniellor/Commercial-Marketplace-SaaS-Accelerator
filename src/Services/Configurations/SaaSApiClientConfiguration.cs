@@ -112,6 +112,5 @@ public class SaaSApiClientConfiguration
     /// The value for IsAdminPortalMultiTenant. Typically, true, false, or null.
     /// </value>
     public string IsAdminPortalMultiTenant { get; set; }
-
-
+    public string KnownProxies { get; set; }
 }
